@@ -34,5 +34,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "aws-amplify": "^5.3.11",
+    "aws-amplify-react": "^5.1.43"
   }
 }
