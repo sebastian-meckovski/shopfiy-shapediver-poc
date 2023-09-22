@@ -1,26 +1,51 @@
 import logo from "./logo.svg";
 import "./App.css";
 import { createPullUpBar, deletePullUpBar } from "./graphql/mutations";
-import { listPullUpBars } from "./graphql/queries";
 import { Amplify, API } from "aws-amplify";
 import awsExports from "./aws-exports";
 import { useEffect, useState } from "react";
+import { withAuthenticator } from "@aws-amplify/ui-react";
+import "@aws-amplify/ui-react/styles.css";
+
 Amplify.configure(awsExports);
 
 const initialData = {
   name: "",
   description: "",
+  userId: "",
 };
 
-function App() {
+function App({ signOut, user }) {
   const [pullUpBarList, setPullUpBarList] = useState();
   const [formData, setFormData] = useState(initialData);
+
+  const listPullUpBarsByUser = /* GraphQL */ `
+    query MyQuery {
+      listPullUpBars(
+        filter: { userID: { eq: "${user.username}" } }
+      ) {
+        items {
+          id
+          location
+          name
+          userID
+          description
+        }
+      }
+    }
+  `;
 
   async function addPullUpBar(name, description) {
     try {
       await API.graphql({
         query: createPullUpBar,
-        variables: { input: { name: name, description: description } },
+        variables: {
+          input: {
+            name: name,
+            description: description,
+            userID: user.username,
+          },
+        },
       }).then((result) => {
         setPullUpBarList((prev) => {
           return [...prev, result.data.createPullUpBar];
@@ -34,15 +59,12 @@ function App() {
   async function getAllPullUpBars() {
     try {
       await API.graphql({
-        query: listPullUpBars,
+        query: listPullUpBarsByUser,
       }).then((response) => {
         setPullUpBarList(response.data?.listPullUpBars?.items);
       });
     } catch {}
   }
-  useEffect(() => {
-    getAllPullUpBars();
-  }, []);
 
   async function removePullUpBar(id) {
     try {
@@ -77,10 +99,18 @@ function App() {
     });
   };
 
+  useEffect(() => {
+    getAllPullUpBars();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
+
+        <h1>Hello {user?.attributes?.name}</h1>
+        <button onClick={signOut}>Sign out</button>
 
         <form onSubmit={handleSubmit}>
           <input
@@ -122,4 +152,4 @@ function App() {
   );
 }
 
-export default App;
+export default withAuthenticator(App);
