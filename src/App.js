@@ -1,9 +1,10 @@
 import logo from "./logo.svg";
 import "./App.css";
 import { createPullUpBar, deletePullUpBar } from "./graphql/mutations";
+import { listPullUpBarsByUser } from "./customQueries";
 import { Amplify, API } from "aws-amplify";
 import awsExports from "./aws-exports";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { withAuthenticator } from "@aws-amplify/ui-react";
 import "@aws-amplify/ui-react/styles.css";
 
@@ -18,22 +19,7 @@ const initialData = {
 function App({ signOut, user }) {
   const [pullUpBarList, setPullUpBarList] = useState();
   const [formData, setFormData] = useState(initialData);
-
-  const listPullUpBarsByUser = /* GraphQL */ `
-    query MyQuery {
-      listPullUpBars(
-        filter: { userID: { eq: "${user.username}" } }
-      ) {
-        items {
-          id
-          location
-          name
-          userID
-          description
-        }
-      }
-    }
-  `;
+  const formRef = useRef();
 
   async function addPullUpBar(name, description) {
     try {
@@ -59,7 +45,7 @@ function App({ signOut, user }) {
   async function getAllPullUpBars() {
     try {
       await API.graphql({
-        query: listPullUpBarsByUser,
+        query: listPullUpBarsByUser(user.username),
       }).then((response) => {
         setPullUpBarList(response.data?.listPullUpBars?.items);
       });
@@ -87,6 +73,7 @@ function App({ signOut, user }) {
 
   const handleSubmit = (event) => {
     event.preventDefault(); // Prevent the default form submission behavior
+    formRef.current?.reset();
     addPullUpBar(formData.name, formData.description);
     setFormData(initialData);
   };
@@ -101,7 +88,7 @@ function App({ signOut, user }) {
 
   useEffect(() => {
     getAllPullUpBars();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -112,13 +99,12 @@ function App({ signOut, user }) {
         <h1>Hello {user?.attributes?.name}</h1>
         <button onClick={signOut}>Sign out</button>
 
-        <form onSubmit={handleSubmit}>
+        <form ref={formRef} onSubmit={handleSubmit}>
           <input
             required
             type="text"
             placeholder="Name"
             name="name"
-            value={formData.name}
             onChange={handleInputChange}
           />
           <input
@@ -126,7 +112,6 @@ function App({ signOut, user }) {
             type="text"
             placeholder="Description"
             name="description"
-            value={formData.description}
             onChange={handleInputChange}
           />
           <button type="submit">Submit</button>
