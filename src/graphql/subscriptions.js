@@ -1,122 +1,110 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
-export const onCreateBlog = /* GraphQL */ `
-  subscription OnCreateBlog($filter: ModelSubscriptionBlogFilterInput) {
-    onCreateBlog(filter: $filter) {
+export const onCreatePullUpBar = /* GraphQL */ `
+  subscription OnCreatePullUpBar(
+    $filter: ModelSubscriptionPullUpBarFilterInput
+  ) {
+    onCreatePullUpBar(filter: $filter) {
       id
       name
-      posts {
+      description
+      userID
+      location
+      Ratings {
         nextToken
         __typename
       }
-      description
+      Comments {
+        nextToken
+        __typename
+      }
       createdAt
       updatedAt
       __typename
     }
   }
 `;
-export const onUpdateBlog = /* GraphQL */ `
-  subscription OnUpdateBlog($filter: ModelSubscriptionBlogFilterInput) {
-    onUpdateBlog(filter: $filter) {
+export const onUpdatePullUpBar = /* GraphQL */ `
+  subscription OnUpdatePullUpBar(
+    $filter: ModelSubscriptionPullUpBarFilterInput
+  ) {
+    onUpdatePullUpBar(filter: $filter) {
       id
       name
-      posts {
+      description
+      userID
+      location
+      Ratings {
         nextToken
         __typename
       }
-      description
+      Comments {
+        nextToken
+        __typename
+      }
       createdAt
       updatedAt
       __typename
     }
   }
 `;
-export const onDeleteBlog = /* GraphQL */ `
-  subscription OnDeleteBlog($filter: ModelSubscriptionBlogFilterInput) {
-    onDeleteBlog(filter: $filter) {
+export const onDeletePullUpBar = /* GraphQL */ `
+  subscription OnDeletePullUpBar(
+    $filter: ModelSubscriptionPullUpBarFilterInput
+  ) {
+    onDeletePullUpBar(filter: $filter) {
       id
       name
-      posts {
-        nextToken
-        __typename
-      }
       description
+      userID
+      location
+      Ratings {
+        nextToken
+        __typename
+      }
+      Comments {
+        nextToken
+        __typename
+      }
       createdAt
       updatedAt
       __typename
     }
   }
 `;
-export const onCreatePost = /* GraphQL */ `
-  subscription OnCreatePost($filter: ModelSubscriptionPostFilterInput) {
-    onCreatePost(filter: $filter) {
+export const onCreateRating = /* GraphQL */ `
+  subscription OnCreateRating($filter: ModelSubscriptionRatingFilterInput) {
+    onCreateRating(filter: $filter) {
       id
       title
-      blog {
-        id
-        name
-        description
-        createdAt
-        updatedAt
-        __typename
-      }
-      comments {
-        nextToken
-        __typename
-      }
+      pullupbarID
       createdAt
       updatedAt
-      blogPostsId
       __typename
     }
   }
 `;
-export const onUpdatePost = /* GraphQL */ `
-  subscription OnUpdatePost($filter: ModelSubscriptionPostFilterInput) {
-    onUpdatePost(filter: $filter) {
+export const onUpdateRating = /* GraphQL */ `
+  subscription OnUpdateRating($filter: ModelSubscriptionRatingFilterInput) {
+    onUpdateRating(filter: $filter) {
       id
       title
-      blog {
-        id
-        name
-        description
-        createdAt
-        updatedAt
-        __typename
-      }
-      comments {
-        nextToken
-        __typename
-      }
+      pullupbarID
       createdAt
       updatedAt
-      blogPostsId
       __typename
     }
   }
 `;
-export const onDeletePost = /* GraphQL */ `
-  subscription OnDeletePost($filter: ModelSubscriptionPostFilterInput) {
-    onDeletePost(filter: $filter) {
+export const onDeleteRating = /* GraphQL */ `
+  subscription OnDeleteRating($filter: ModelSubscriptionRatingFilterInput) {
+    onDeleteRating(filter: $filter) {
       id
       title
-      blog {
-        id
-        name
-        description
-        createdAt
-        updatedAt
-        __typename
-      }
-      comments {
-        nextToken
-        __typename
-      }
+      pullupbarID
       createdAt
       updatedAt
-      blogPostsId
       __typename
     }
   }
@@ -125,18 +113,10 @@ export const onCreateComment = /* GraphQL */ `
   subscription OnCreateComment($filter: ModelSubscriptionCommentFilterInput) {
     onCreateComment(filter: $filter) {
       id
-      post {
-        id
-        title
-        createdAt
-        updatedAt
-        blogPostsId
-        __typename
-      }
       content
+      pullupbarID
       createdAt
       updatedAt
-      postCommentsId
       __typename
     }
   }
@@ -145,18 +125,10 @@ export const onUpdateComment = /* GraphQL */ `
   subscription OnUpdateComment($filter: ModelSubscriptionCommentFilterInput) {
     onUpdateComment(filter: $filter) {
       id
-      post {
-        id
-        title
-        createdAt
-        updatedAt
-        blogPostsId
-        __typename
-      }
       content
+      pullupbarID
       createdAt
       updatedAt
-      postCommentsId
       __typename
     }
   }
@@ -165,18 +137,10 @@ export const onDeleteComment = /* GraphQL */ `
   subscription OnDeleteComment($filter: ModelSubscriptionCommentFilterInput) {
     onDeleteComment(filter: $filter) {
       id
-      post {
-        id
-        title
-        createdAt
-        updatedAt
-        blogPostsId
-        __typename
-      }
       content
+      pullupbarID
       createdAt
       updatedAt
-      postCommentsId
       __typename
     }
   }

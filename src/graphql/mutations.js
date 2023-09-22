@@ -1,140 +1,122 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
-export const createBlog = /* GraphQL */ `
-  mutation CreateBlog(
-    $input: CreateBlogInput!
-    $condition: ModelBlogConditionInput
+export const createPullUpBar = /* GraphQL */ `
+  mutation CreatePullUpBar(
+    $input: CreatePullUpBarInput!
+    $condition: ModelPullUpBarConditionInput
   ) {
-    createBlog(input: $input, condition: $condition) {
+    createPullUpBar(input: $input, condition: $condition) {
       id
       name
-      posts {
+      description
+      userID
+      location
+      Ratings {
         nextToken
         __typename
       }
-      description
+      Comments {
+        nextToken
+        __typename
+      }
       createdAt
       updatedAt
       __typename
     }
   }
 `;
-export const updateBlog = /* GraphQL */ `
-  mutation UpdateBlog(
-    $input: UpdateBlogInput!
-    $condition: ModelBlogConditionInput
+export const updatePullUpBar = /* GraphQL */ `
+  mutation UpdatePullUpBar(
+    $input: UpdatePullUpBarInput!
+    $condition: ModelPullUpBarConditionInput
   ) {
-    updateBlog(input: $input, condition: $condition) {
+    updatePullUpBar(input: $input, condition: $condition) {
       id
       name
-      posts {
+      description
+      userID
+      location
+      Ratings {
         nextToken
         __typename
       }
-      description
+      Comments {
+        nextToken
+        __typename
+      }
       createdAt
       updatedAt
       __typename
     }
   }
 `;
-export const deleteBlog = /* GraphQL */ `
-  mutation DeleteBlog(
-    $input: DeleteBlogInput!
-    $condition: ModelBlogConditionInput
+export const deletePullUpBar = /* GraphQL */ `
+  mutation DeletePullUpBar(
+    $input: DeletePullUpBarInput!
+    $condition: ModelPullUpBarConditionInput
   ) {
-    deleteBlog(input: $input, condition: $condition) {
+    deletePullUpBar(input: $input, condition: $condition) {
       id
       name
-      posts {
-        nextToken
-        __typename
-      }
       description
+      userID
+      location
+      Ratings {
+        nextToken
+        __typename
+      }
+      Comments {
+        nextToken
+        __typename
+      }
       createdAt
       updatedAt
       __typename
     }
   }
 `;
-export const createPost = /* GraphQL */ `
-  mutation CreatePost(
-    $input: CreatePostInput!
-    $condition: ModelPostConditionInput
+export const createRating = /* GraphQL */ `
+  mutation CreateRating(
+    $input: CreateRatingInput!
+    $condition: ModelRatingConditionInput
   ) {
-    createPost(input: $input, condition: $condition) {
+    createRating(input: $input, condition: $condition) {
       id
       title
-      blog {
-        id
-        name
-        description
-        createdAt
-        updatedAt
-        __typename
-      }
-      comments {
-        nextToken
-        __typename
-      }
+      pullupbarID
       createdAt
       updatedAt
-      blogPostsId
       __typename
     }
   }
 `;
-export const updatePost = /* GraphQL */ `
-  mutation UpdatePost(
-    $input: UpdatePostInput!
-    $condition: ModelPostConditionInput
+export const updateRating = /* GraphQL */ `
+  mutation UpdateRating(
+    $input: UpdateRatingInput!
+    $condition: ModelRatingConditionInput
   ) {
-    updatePost(input: $input, condition: $condition) {
+    updateRating(input: $input, condition: $condition) {
       id
       title
-      blog {
-        id
-        name
-        description
-        createdAt
-        updatedAt
-        __typename
-      }
-      comments {
-        nextToken
-        __typename
-      }
+      pullupbarID
       createdAt
       updatedAt
-      blogPostsId
       __typename
     }
   }
 `;
-export const deletePost = /* GraphQL */ `
-  mutation DeletePost(
-    $input: DeletePostInput!
-    $condition: ModelPostConditionInput
+export const deleteRating = /* GraphQL */ `
+  mutation DeleteRating(
+    $input: DeleteRatingInput!
+    $condition: ModelRatingConditionInput
   ) {
-    deletePost(input: $input, condition: $condition) {
+    deleteRating(input: $input, condition: $condition) {
       id
       title
-      blog {
-        id
-        name
-        description
-        createdAt
-        updatedAt
-        __typename
-      }
-      comments {
-        nextToken
-        __typename
-      }
+      pullupbarID
       createdAt
       updatedAt
-      blogPostsId
       __typename
     }
   }
@@ -146,18 +128,10 @@ export const createComment = /* GraphQL */ `
   ) {
     createComment(input: $input, condition: $condition) {
       id
-      post {
-        id
-        title
-        createdAt
-        updatedAt
-        blogPostsId
-        __typename
-      }
       content
+      pullupbarID
       createdAt
       updatedAt
-      postCommentsId
       __typename
     }
   }
@@ -169,18 +143,10 @@ export const updateComment = /* GraphQL */ `
   ) {
     updateComment(input: $input, condition: $condition) {
       id
-      post {
-        id
-        title
-        createdAt
-        updatedAt
-        blogPostsId
-        __typename
-      }
       content
+      pullupbarID
       createdAt
       updatedAt
-      postCommentsId
       __typename
     }
   }
@@ -192,18 +158,10 @@ export const deleteComment = /* GraphQL */ `
   ) {
     deleteComment(input: $input, condition: $condition) {
       id
-      post {
-        id
-        title
-        createdAt
-        updatedAt
-        blogPostsId
-        __typename
-      }
       content
+      pullupbarID
       createdAt
       updatedAt
-      postCommentsId
       __typename
     }
   }

@@ -1,33 +1,41 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
-export const getBlog = /* GraphQL */ `
-  query GetBlog($id: ID!) {
-    getBlog(id: $id) {
+export const getPullUpBar = /* GraphQL */ `
+  query GetPullUpBar($id: ID!) {
+    getPullUpBar(id: $id) {
       id
       name
-      posts {
+      description
+      userID
+      location
+      Ratings {
         nextToken
         __typename
       }
-      description
+      Comments {
+        nextToken
+        __typename
+      }
       createdAt
       updatedAt
       __typename
     }
   }
 `;
-export const listBlogs = /* GraphQL */ `
-  query ListBlogs(
-    $filter: ModelBlogFilterInput
+export const listPullUpBars = /* GraphQL */ `
+  query ListPullUpBars(
+    $filter: ModelPullUpBarFilterInput
     $limit: Int
     $nextToken: String
   ) {
-    listBlogs(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    listPullUpBars(filter: $filter, limit: $limit, nextToken: $nextToken) {
       items {
         id
         name
         description
+        userID
+        location
         createdAt
         updatedAt
         __typename
@@ -37,43 +45,59 @@ export const listBlogs = /* GraphQL */ `
     }
   }
 `;
-export const getPost = /* GraphQL */ `
-  query GetPost($id: ID!) {
-    getPost(id: $id) {
+export const getRating = /* GraphQL */ `
+  query GetRating($id: ID!) {
+    getRating(id: $id) {
       id
       title
-      blog {
-        id
-        name
-        description
-        createdAt
-        updatedAt
-        __typename
-      }
-      comments {
-        nextToken
-        __typename
-      }
+      pullupbarID
       createdAt
       updatedAt
-      blogPostsId
       __typename
     }
   }
 `;
-export const listPosts = /* GraphQL */ `
-  query ListPosts(
-    $filter: ModelPostFilterInput
+export const listRatings = /* GraphQL */ `
+  query ListRatings(
+    $filter: ModelRatingFilterInput
     $limit: Int
     $nextToken: String
   ) {
-    listPosts(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    listRatings(filter: $filter, limit: $limit, nextToken: $nextToken) {
       items {
         id
         title
+        pullupbarID
         createdAt
         updatedAt
-        blogPostsId
+        __typename
+      }
+      nextToken
+      __typename
+    }
+  }
+`;
+export const ratingsByPullupbarID = /* GraphQL */ `
+  query RatingsByPullupbarID(
+    $pullupbarID: ID!
+    $sortDirection: ModelSortDirection
+    $filter: ModelRatingFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    ratingsByPullupbarID(
+      pullupbarID: $pullupbarID
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        title
+        pullupbarID
+        createdAt
+        updatedAt
         __typename
       }
       nextToken
@@ -85,18 +109,10 @@ export const getComment = /* GraphQL */ `
   query GetComment($id: ID!) {
     getComment(id: $id) {
       id
-      post {
-        id
-        title
-        createdAt
-        updatedAt
-        blogPostsId
-        __typename
-      }
       content
+      pullupbarID
       createdAt
       updatedAt
-      postCommentsId
       __typename
     }
   }
@@ -111,9 +127,37 @@ export const listComments = /* GraphQL */ `
       items {
         id
         content
+        pullupbarID
         createdAt
         updatedAt
-        postCommentsId
+        __typename
+      }
+      nextToken
+      __typename
+    }
+  }
+`;
+export const commentsByPullupbarID = /* GraphQL */ `
+  query CommentsByPullupbarID(
+    $pullupbarID: ID!
+    $sortDirection: ModelSortDirection
+    $filter: ModelCommentFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    commentsByPullupbarID(
+      pullupbarID: $pullupbarID
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        content
+        pullupbarID
+        createdAt
+        updatedAt
         __typename
       }
       nextToken

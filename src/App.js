@@ -1,7 +1,7 @@
 import logo from "./logo.svg";
 import "./App.css";
-import { createBlog, deleteBlog } from "./graphql/mutations";
-import { listBlogs } from "./graphql/queries";
+import { createPullUpBar, deletePullUpBar } from "./graphql/mutations";
+import { listPullUpBars } from "./graphql/queries";
 import { Amplify, API } from "aws-amplify";
 import awsExports from "./aws-exports";
 import { useEffect, useState } from "react";
@@ -13,48 +13,48 @@ const initialData = {
 };
 
 function App() {
-  const [blogList, setBlogList] = useState();
+  const [pullUpBarList, setPullUpBarList] = useState();
   const [formData, setFormData] = useState(initialData);
 
-  async function addBlog(name, description) {
+  async function addPullUpBar(name, description) {
     try {
       await API.graphql({
-        query: createBlog,
+        query: createPullUpBar,
         variables: { input: { name: name, description: description } },
       }).then((result) => {
-        setBlogList((prev) => {
-          return [...prev, result.data.createBlog];
+        setPullUpBarList((prev) => {
+          return [...prev, result.data.createPullUpBar];
         });
       });
     } catch (err) {
-      console.log("error creating blog:", err);
+      console.log("error creating pullUpBar:", err);
     }
   }
 
-  async function getAllBlogs() {
+  async function getAllPullUpBars() {
     try {
       await API.graphql({
-        query: listBlogs,
+        query: listPullUpBars,
       }).then((response) => {
-        setBlogList(response.data?.listBlogs?.items);
+        setPullUpBarList(response.data?.listPullUpBars?.items);
       });
     } catch {}
   }
   useEffect(() => {
-    getAllBlogs();
+    getAllPullUpBars();
   }, []);
 
-  async function removeBLog(id) {
+  async function removePullUpBar(id) {
     try {
       await API.graphql({
-        query: deleteBlog,
+        query: deletePullUpBar,
         variables: {
           input: { id: id },
         },
       }).then((response) => {
-        setBlogList((prev) => {
+        setPullUpBarList((prev) => {
           return prev.filter((x) => {
-            return x?.id !== response?.data?.deleteBlog?.id;
+            return x?.id !== response?.data?.deletePullUpBar?.id;
           });
         });
       });
@@ -65,7 +65,7 @@ function App() {
 
   const handleSubmit = (event) => {
     event.preventDefault(); // Prevent the default form submission behavior
-    addBlog(formData.name, formData.description);
+    addPullUpBar(formData.name, formData.description);
     setFormData(initialData);
   };
 
@@ -102,14 +102,14 @@ function App() {
           <button type="submit">Submit</button>
         </form>
 
-        {blogList &&
-          blogList.map((x) => {
+        {pullUpBarList &&
+          pullUpBarList.map((x) => {
             return (
               <span key={x.id}>
                 {x.name} - {x.description}{" "}
                 <button
                   onClick={() => {
-                    removeBLog(x.id);
+                    removePullUpBar(x.id);
                   }}
                 >
                   X
