@@ -9,6 +9,7 @@ export const getPullUpBar = /* GraphQL */ `
       description
       userID
       location
+      images
       Ratings {
         nextToken
         __typename
@@ -36,6 +37,7 @@ export const listPullUpBars = /* GraphQL */ `
         description
         userID
         location
+        images
         createdAt
         updatedAt
         __typename

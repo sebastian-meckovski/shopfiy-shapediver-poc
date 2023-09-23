@@ -2,12 +2,13 @@ import logo from "./logo.svg";
 import "./App.scss";
 import { createPullUpBar, deletePullUpBar } from "./graphql/mutations";
 import { listPullUpBarsByUser } from "./customQueries";
-import { Amplify, API } from "aws-amplify";
+import { Amplify, API, Storage } from "aws-amplify";
 import awsExports from "./aws-exports";
 import { useEffect, useRef, useState } from "react";
 import { withAuthenticator } from "@aws-amplify/ui-react";
 import Popup from "./components/Popup/Popup";
 import "@aws-amplify/ui-react/styles.css";
+import makeid from "./utils/randomString";
 
 Amplify.configure(awsExports);
 
@@ -15,6 +16,7 @@ const initialData = {
   name: "",
   description: "",
   userId: "",
+  file: null,
 };
 
 function App({ signOut, user }) {
@@ -23,8 +25,23 @@ function App({ signOut, user }) {
   const formRef = useRef();
   const [popupVisible, setPopupVisible] = useState(false);
 
-  async function addPullUpBar(name, description) {
+  async function addPullUpBar(name, description, files) {
     try {
+      const fileArray = [];
+
+      for (const file of files) {
+        const uniqueId = makeid(12);
+        await Storage.put(`${uniqueId}-${user.username}`, file, {
+          contentType: "image/png",
+        }).then((response) => {
+          const fileId = response.key.slice(0, 12);
+          fileArray.push(fileId);
+        });
+      }
+
+      // Use Promise.all to fetch all image links
+      const images = await getAllPullUpLinks(fileArray);
+
       await API.graphql({
         query: createPullUpBar,
         variables: {
@@ -32,27 +49,65 @@ function App({ signOut, user }) {
             name: name,
             description: description,
             userID: user.username,
+            images: fileArray,
           },
         },
       }).then((result) => {
-        setPullUpBarList((prev) => {
-          return [result.data.createPullUpBar, ...prev];
-        });
+        const createdPullUpBar = result.data.createPullUpBar;
+
+        // Combine the created pull-up bar with its image links
+        createdPullUpBar.images = images;
+
+        setPullUpBarList((prev) => [createdPullUpBar, ...prev]);
       });
-    } catch (err) {
-      console.log("error creating pullUpBar:", err);
+
+      // Handle the results as needed
+    } catch (error) {
+      console.error("Error:", error);
     }
   }
 
   async function getAllPullUpBars() {
     try {
-      await API.graphql({
+      const response = await API.graphql({
         query: listPullUpBarsByUser(user.username),
-      }).then((response) => {
-        setPullUpBarList(response.data?.listPullUpBars?.items);
       });
-    } catch {}
+
+      const pullUpBars = response.data?.listPullUpBars?.items;
+
+      // Use Promise.all to fetch all images concurrently
+      const updatedPullUpBars = await Promise.all(
+        pullUpBars.map(async (x) => {
+          x.images = await getAllPullUpLinks(x.images);
+          return x;
+        })
+      );
+
+      setPullUpBarList(updatedPullUpBars);
+    } catch (error) {
+      // Handle errors here
+      console.error("Error fetching data:", error);
+    }
   }
+
+  async function getAllPullUpLinks(idArray) {
+    const linkArray = [];
+    for (const id of idArray) {
+      try {
+        const response = await Storage.get(`${id}-${user.username}`);
+        linkArray.push(response);
+      } catch (error) {
+        // Handle errors if an image cannot be fetched
+        console.error("Error fetching image:", error);
+      }
+    }
+    return linkArray;
+  }
+
+  useEffect(() => {
+    getAllPullUpBars();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function removePullUpBar(id) {
     try {
@@ -73,14 +128,10 @@ function App({ signOut, user }) {
     }
   }
 
-  // function handleUpload(e) {
-  //   console.log(e.target.files);
-  // }
-
   const handleSubmit = (event) => {
     event.preventDefault(); // Prevent the default form submission behavior
     formRef.current?.reset();
-    addPullUpBar(formData.name, formData.description);
+    addPullUpBar(formData.name, formData.description, formData.file);
     setFormData(initialData);
     setPopupVisible(false);
   };
@@ -93,10 +144,15 @@ function App({ signOut, user }) {
     });
   };
 
-  useEffect(() => {
-    getAllPullUpBars();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  function handleUpload(e) {
+    const file = Object.values(e.target.files);
+    // const file =(e.target.files)
+
+    setFormData({
+      ...formData,
+      file: file,
+    });
+  }
 
   return (
     <>
@@ -123,6 +179,17 @@ function App({ signOut, user }) {
                     >
                       X
                     </button>
+                    {x.images?.map((image) => {
+                      return (
+                        <img
+                          key={image}
+                          width={"50px"}
+                          style={{ border: "2px solid black", margin: "2px" }}
+                          src={image}
+                          alt={"nope.."}
+                        />
+                      );
+                    })}
                   </li>
                 );
               })}
@@ -130,7 +197,7 @@ function App({ signOut, user }) {
 
           <Popup
             display={popupVisible}
-            popupButtonText={'Cancel'}
+            popupButtonText={"Cancel"}
             handleOkButtonClick={() => {
               setPopupVisible(false);
             }}
@@ -152,7 +219,12 @@ function App({ signOut, user }) {
                     onChange={handleInputChange}
                   />
                   {/* ToDo: File uploads to S3 storage */}
-                  {/* <input multiple onChange={handleUpload} type={"file"} /> */}
+                  <input
+                    required
+                    multiple
+                    onChange={handleUpload}
+                    type={"file"}
+                  />
 
                   <button type="submit">Submit</button>
                 </form>

@@ -2,7 +2,7 @@
 
 export const listPullUpBarsByUser = (id) => {
   return /* GraphQL */ `
-    query MyQuery {
+    query listPullUpBarsByUser {
     listPullUpBars(
         filter: { userID: { eq: "${id}" } }
     ) {
@@ -12,6 +12,7 @@ export const listPullUpBarsByUser = (id) => {
         name
         userID
         description
+        images
         }
     }
     }
