@@ -12,16 +12,8 @@ import makeid from "./utils/randomString";
 
 Amplify.configure(awsExports);
 
-const initialData = {
-  name: "",
-  description: "",
-  userId: "",
-  file: null,
-};
-
 function App({ signOut, user }) {
   const [pullUpBarList, setPullUpBarList] = useState();
-  const [formData, setFormData] = useState(initialData);
   const formRef = useRef();
   const [popupVisible, setPopupVisible] = useState(false);
 
@@ -50,7 +42,7 @@ function App({ signOut, user }) {
             description: description,
             userID: user.username,
             images: fileArray,
-            type: "PullUpBar"
+            type: "PullUpBar",
           },
         },
       }).then((result) => {
@@ -73,8 +65,8 @@ function App({ signOut, user }) {
       const response = await API.graphql({
         query: listPullUpBarsByUserByDate,
         variables: {
-          userID: user.username
-        }
+          userID: user.username,
+        },
       });
 
       const pullUpBars = response.data?.PullUpBarsByDate?.items;
@@ -134,28 +126,19 @@ function App({ signOut, user }) {
 
   const handleSubmit = (event) => {
     event.preventDefault(); // Prevent the default form submission behavior
+
+    const files = Object.values(formRef.current.elements["input-name"].files);
+    addPullUpBar(
+      formRef.current.elements["name"].value,
+      formRef.current.elements["description"].value,
+      files
+    );
     formRef.current?.reset();
-    addPullUpBar(formData.name, formData.description, formData.file);
-    setFormData(initialData);
     setPopupVisible(false);
   };
 
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
-
-  function handleUpload(e) {
-    const file = Object.values(e.target.files);
-    // const file =(e.target.files)
-
-    setFormData({
-      ...formData,
-      file: file,
-    });
+  function handleEdit(id) {
+    console.log(id);
   }
 
   return (
@@ -183,6 +166,13 @@ function App({ signOut, user }) {
                     >
                       X
                     </button>
+                    <button
+                      onClick={() => {
+                        handleEdit(x.id);
+                      }}
+                    >
+                      Edit
+                    </button>
                     {x.images?.map((image) => {
                       return (
                         <img
@@ -208,35 +198,21 @@ function App({ signOut, user }) {
             renderContent={() => {
               return (
                 <form ref={formRef} onSubmit={handleSubmit}>
-                  <input
-                    required
-                    type="text"
-                    placeholder="Name"
-                    name="name"
-                    onChange={handleInputChange}
-                  />
+                  <input required type="text" placeholder="Name" name="name" />
                   <input
                     required
                     type="text"
                     placeholder="Description"
                     name="description"
-                    onChange={handleInputChange}
                   />
-                  {/* ToDo: File uploads to S3 storage */}
-                  <input
-                    required
-                    multiple
-                    onChange={handleUpload}
-                    type={"file"}
-                  />
-
+                  <input required multiple type={"file"} name={"input-name"} />
                   <button type="submit">Submit</button>
                 </form>
               );
             }}
           />
+          <a href={`/`}>Home</a>
         </div>
-        <a href={`/`}>Home</a>
       </div>
     </>
   );
