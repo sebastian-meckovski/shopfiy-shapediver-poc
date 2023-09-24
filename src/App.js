@@ -1,7 +1,7 @@
 import logo from "./logo.svg";
 import "./App.scss";
 import { createPullUpBar, deletePullUpBar } from "./graphql/mutations";
-import { listPullUpBarsByUser } from "./customQueries";
+import { listPullUpBarsByUserByDate } from "./customQueries";
 import { Amplify, API, Storage } from "aws-amplify";
 import awsExports from "./aws-exports";
 import { useEffect, useRef, useState } from "react";
@@ -50,6 +50,7 @@ function App({ signOut, user }) {
             description: description,
             userID: user.username,
             images: fileArray,
+            type: "PullUpBar"
           },
         },
       }).then((result) => {
@@ -70,10 +71,13 @@ function App({ signOut, user }) {
   async function getAllPullUpBars() {
     try {
       const response = await API.graphql({
-        query: listPullUpBarsByUser(user.username),
+        query: listPullUpBarsByUserByDate,
+        variables: {
+          userID: user.username
+        }
       });
 
-      const pullUpBars = response.data?.listPullUpBars?.items;
+      const pullUpBars = response.data?.PullUpBarsByDate?.items;
 
       // Use Promise.all to fetch all images concurrently
       const updatedPullUpBars = await Promise.all(
@@ -232,6 +236,7 @@ function App({ signOut, user }) {
             }}
           />
         </div>
+        <a href={`/`}>Home</a>
       </div>
     </>
   );

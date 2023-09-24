@@ -1,20 +1,34 @@
 /* eslint-disable */
 
-export const listPullUpBarsByUser = (id) => {
-  return /* GraphQL */ `
-    query listPullUpBarsByUser {
-    listPullUpBars(
-        filter: { userID: { eq: "${id}" } }
-    ) {
-        items {
+export const listPullUpBarsByUserQuery = /* GraphQL */ `
+  query listPullUpBarsByUser($userID: String) {
+    listPullUpBars(filter: { userID: { eq: $userID } }) {
+      items {
         id
         location
         name
         userID
         description
         images
-        }
+      }
     }
-    }
+  }
 `;
-};
+
+export const listPullUpBarsByUserByDate = /* GraphQL */ `
+  query PullUpBarsByDate($userID: String) {
+    PullUpBarsByDate(
+      type: "PullUpBar"
+      sortDirection: DESC
+      filter: { userID: { eq: $userID } }
+    ) {
+      items {
+        id
+        images
+        name
+        description
+        userID
+      }
+    }
+  }
+`;

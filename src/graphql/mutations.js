@@ -21,6 +21,7 @@ export const createPullUpBar = /* GraphQL */ `
         nextToken
         __typename
       }
+      type
       createdAt
       updatedAt
       __typename
@@ -47,6 +48,7 @@ export const updatePullUpBar = /* GraphQL */ `
         nextToken
         __typename
       }
+      type
       createdAt
       updatedAt
       __typename
@@ -73,6 +75,7 @@ export const deletePullUpBar = /* GraphQL */ `
         nextToken
         __typename
       }
+      type
       createdAt
       updatedAt
       __typename
