@@ -9,7 +9,7 @@ import { listPullUpBarsByUserByDate } from "./customQueries";
 import { getPullUpBar } from "./graphql/queries";
 import { Amplify, API, Storage } from "aws-amplify";
 import awsExports from "./aws-exports";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { withAuthenticator } from "@aws-amplify/ui-react";
 import Popup from "./components/Popup/Popup";
 import "@aws-amplify/ui-react/styles.css";
@@ -27,7 +27,6 @@ const initialData = {
 
 function App({ signOut, user }) {
   const [pullUpBarList, setPullUpBarList] = useState();
-  const formRef = useRef();
   const [popupVisible, setPopupVisible] = useState(false);
   const [formData, setFormData] = useState(initialData);
   const [isUpdating, setIsUpdating] = useState(false);
@@ -277,10 +276,7 @@ function App({ signOut, user }) {
             }}
             renderContent={() => {
               return (
-                <form
-                  ref={formRef}
-                  onSubmit={isUpdating ? handleUpdate : handleSubmitAdd}
-                >
+                <form onSubmit={isUpdating ? handleUpdate : handleSubmitAdd}>
                   <input
                     value={formData.name}
                     onChange={handleInputChange}
