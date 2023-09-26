@@ -47,11 +47,11 @@ function App({ signOut, user }) {
       const fileArray = [];
       if (Array.isArray(files)) {
         for (const file of files) {
-          const uniqueId = makeid(12);
-          await Storage.put(`${uniqueId}-${user.username}`, file, {
+          const uniqueId = makeid(24);
+          await Storage.put(uniqueId, file, {
             contentType: "image/png",
           }).then((response) => {
-            const fileId = response.key.slice(0, 12);
+            const fileId = response.key;
             fileArray.push(fileId);
           });
         }
@@ -72,7 +72,6 @@ function App({ signOut, user }) {
         },
       }).then((result) => {
         const createdPullUpBar = result.data.createPullUpBar;
-
         // Combine the created pull-up bar with its image links
         createdPullUpBar.images = images;
         setPullUpBarList((prev) => [createdPullUpBar, ...prev]);
@@ -111,17 +110,17 @@ function App({ signOut, user }) {
   }
 
   async function getAllPullUpLinks(idArray) {
-    const linkArray = [];
+    const imageObjectArray = [];
     for (const id of idArray) {
       try {
-        const response = await Storage.get(`${id}-${user.username}`);
-        linkArray.push(response);
+        const response = await Storage.get(id);
+        imageObjectArray.push({ id: id, url: response });
       } catch (error) {
         // Handle errors if an image cannot be fetched
         console.error("Error fetching image:", error);
       }
     }
-    return linkArray;
+    return imageObjectArray;
   }
 
   async function removePullUpBar(id) {
@@ -256,10 +255,10 @@ function App({ signOut, user }) {
                     {x.images?.map((image) => {
                       return (
                         <img
-                          key={image}
+                          key={image.id}
                           width={"50px"}
                           style={{ border: "2px solid black", margin: "2px" }}
-                          src={image}
+                          src={image.url}
                           alt={"not available"}
                         />
                       );
