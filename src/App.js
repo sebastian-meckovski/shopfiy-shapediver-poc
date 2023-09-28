@@ -132,6 +132,10 @@ function App({ signOut, user }) {
           input: { id: id },
         },
       }).then((response) => {
+        const imagesToDelete = response.data.deletePullUpBar.images;
+        imagesToDelete.forEach(async (image) => {
+          await Storage.remove(image);
+        });
         setPullUpBarList((prev) => {
           return prev.filter((x) => {
             return x?.id !== response?.data?.deletePullUpBar?.id;
