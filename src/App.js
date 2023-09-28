@@ -67,7 +67,7 @@ function App({ signOut, user }) {
             name: name,
             description: description,
             userID: user.username,
-            files: fileArray,
+            images: fileArray,
             type: "PullUpBar",
           },
         },
