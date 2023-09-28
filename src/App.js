@@ -21,7 +21,8 @@ const initialData = {
   id: "",
   name: "",
   description: "",
-  files: null,
+  files: [],
+  loadedFiles: [],
   index: 0,
 };
 
@@ -66,7 +67,7 @@ function App({ signOut, user }) {
             name: name,
             description: description,
             userID: user.username,
-            images: fileArray,
+            files: fileArray,
             type: "PullUpBar",
           },
         },
@@ -154,7 +155,10 @@ function App({ signOut, user }) {
       await API.graphql({
         query: getPullUpBar,
         variables: { id: id },
-      }).then((response) => {
+      }).then(async (response) => {
+        const imagesLinks = await getAllPullUpLinks(
+          response.data.getPullUpBar.images
+        );
         setPopupVisible(true);
         setIsUpdating(true);
         setFormData((prev) => {
@@ -164,6 +168,7 @@ function App({ signOut, user }) {
             description: response.data.getPullUpBar.description,
             id: response.data.getPullUpBar.id,
             index: index,
+            loadedFiles: imagesLinks,
           };
         });
       });
@@ -172,9 +177,22 @@ function App({ signOut, user }) {
     }
   }
 
-  const handleUpdate = (event) => {
-    event.preventDefault(); // Prevent the default form submission behavior
+  const handleUpdate = async (event) => {
+    event.preventDefault();
     try {
+      const fileArray = [];
+      if (Array.isArray(formData.files)) {
+        for (const file of formData.files) {
+          const uniqueId = makeid(24);
+          await Storage.put(uniqueId, file, {
+            contentType: "image/png",
+          }).then((response) => {
+            const fileId = response.key;
+            fileArray.push(fileId);
+          });
+        }
+      }
+
       API.graphql({
         query: updatePullUpBar,
         variables: {
@@ -182,6 +200,10 @@ function App({ signOut, user }) {
             name: formData.name,
             description: formData.description,
             id: formData.id,
+            images: [
+              ...pullUpBarList[formData.index].images.map((item) => item.id),
+              ...fileArray,
+            ],
           },
         },
       }).then(async (response) => {
@@ -298,6 +320,44 @@ function App({ signOut, user }) {
                     name={"input-name"}
                     onChange={handleFileUpload}
                   />
+                  <div>
+                    {formData.loadedFiles.map((file, index) => (
+                      <div
+                        key={index}
+                        style={{ display: "inline-block", margin: "5px" }}
+                      >
+                        <img
+                          src={file.url}
+                          alt={`preview-${index}`}
+                          style={{
+                            width: "150px",
+                            height: "150px",
+                            border: "1px solid",
+                          }}
+                          //Todo
+                          // onClick={() => clearLoadedInputValue(index)}
+                        />
+                      </div>
+                    ))}
+                    {formData.files.map((file, index) => (
+                      <div
+                        key={index}
+                        style={{ display: "inline-block", margin: "5px" }}
+                      >
+                        <img
+                          src={URL.createObjectURL(file)}
+                          alt={`preview-${index}`}
+                          style={{
+                            width: "150px",
+                            height: "150px",
+                            border: "1px solid",
+                          }}
+                          //Todo
+                          // onClick={() => clearInputValue(index)}
+                        />
+                      </div>
+                    ))}
+                  </div>
                   <button type="submit">{isUpdating ? "Update" : "Add"}</button>
                 </form>
               );

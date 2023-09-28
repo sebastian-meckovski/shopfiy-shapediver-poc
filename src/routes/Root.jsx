@@ -9,7 +9,7 @@ function Root() {
       return [...prevFiles, ...e.target.files];
     });
   };
-  
+
   useEffect(() => {
     const dataTransfer = new DataTransfer();
     files.forEach((file) => {
