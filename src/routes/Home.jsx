@@ -13,8 +13,8 @@ export default function Home() {
   });
 
   console.log('process.env.TEST_VARIABLE')
-  console.log(process.env.TEST_VARIABLE)
-  
+  console.log(process.env.REACT_APP_TEST_VAR)
+
   console.log('process.env.REACT_APP_SECRETS')
   console.log(process.env.REACT_APP_SECRETS)
 
