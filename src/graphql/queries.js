@@ -49,40 +49,6 @@ export const listPullUpBars = /* GraphQL */ `
     }
   }
 `;
-export const PullUpBarsByDate = /* GraphQL */ `
-  query PullUpBarsByDate(
-    $type: String!
-    $createdAt: ModelStringKeyConditionInput
-    $sortDirection: ModelSortDirection
-    $filter: ModelPullUpBarFilterInput
-    $limit: Int
-    $nextToken: String
-  ) {
-    PullUpBarsByDate(
-      type: $type
-      createdAt: $createdAt
-      sortDirection: $sortDirection
-      filter: $filter
-      limit: $limit
-      nextToken: $nextToken
-    ) {
-      items {
-        id
-        name
-        description
-        userID
-        location
-        images
-        type
-        createdAt
-        updatedAt
-        __typename
-      }
-      nextToken
-      __typename
-    }
-  }
-`;
 export const getRating = /* GraphQL */ `
   query GetRating($id: ID!) {
     getRating(id: $id) {
@@ -102,34 +68,6 @@ export const listRatings = /* GraphQL */ `
     $nextToken: String
   ) {
     listRatings(filter: $filter, limit: $limit, nextToken: $nextToken) {
-      items {
-        id
-        title
-        pullupbarID
-        createdAt
-        updatedAt
-        __typename
-      }
-      nextToken
-      __typename
-    }
-  }
-`;
-export const ratingsByPullupbarID = /* GraphQL */ `
-  query RatingsByPullupbarID(
-    $pullupbarID: ID!
-    $sortDirection: ModelSortDirection
-    $filter: ModelRatingFilterInput
-    $limit: Int
-    $nextToken: String
-  ) {
-    ratingsByPullupbarID(
-      pullupbarID: $pullupbarID
-      sortDirection: $sortDirection
-      filter: $filter
-      limit: $limit
-      nextToken: $nextToken
-    ) {
       items {
         id
         title
@@ -165,6 +103,68 @@ export const listComments = /* GraphQL */ `
       items {
         id
         content
+        pullupbarID
+        createdAt
+        updatedAt
+        __typename
+      }
+      nextToken
+      __typename
+    }
+  }
+`;
+export const PullUpBarsByDate = /* GraphQL */ `
+  query PullUpBarsByDate(
+    $type: String!
+    $createdAt: ModelStringKeyConditionInput
+    $sortDirection: ModelSortDirection
+    $filter: ModelPullUpBarFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    PullUpBarsByDate(
+      type: $type
+      createdAt: $createdAt
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        name
+        description
+        userID
+        location
+        images
+        type
+        createdAt
+        updatedAt
+        __typename
+      }
+      nextToken
+      __typename
+    }
+  }
+`;
+export const ratingsByPullupbarID = /* GraphQL */ `
+  query RatingsByPullupbarID(
+    $pullupbarID: ID!
+    $sortDirection: ModelSortDirection
+    $filter: ModelRatingFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    ratingsByPullupbarID(
+      pullupbarID: $pullupbarID
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        title
         pullupbarID
         createdAt
         updatedAt
