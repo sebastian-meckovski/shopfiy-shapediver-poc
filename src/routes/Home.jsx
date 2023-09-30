@@ -12,7 +12,16 @@ export default function Home() {
     googleMapsApiKey: key,
   });
 
+  console.log('process.env.TEST_VARIABLE')
+  console.log(process.env.TEST_VARIABLE)
+  
+  console.log('process.env.REACT_APP_SECRETS')
+  console.log(process.env.REACT_APP_SECRETS)
+
+  console.log('process.env');
   console.log(process.env);
+
+  console.log('key:');
   console.log(key);
 
   if (!isLoaded) return <div>loading...</div>;
