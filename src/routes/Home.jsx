@@ -15,6 +15,7 @@ export default function Home() {
       zoom={6}
       center={{ lat: 55, lng: 23 }}
       mapContainerClassName="GoogleMap"
+      options={{ mapId: "b910d6f6fef88c00" }}
     ></GoogleMap>
   );
 }
