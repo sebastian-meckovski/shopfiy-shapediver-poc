@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { GoogleMap, useLoadScript, Marker } from "@react-google-maps/api";
 import "./Home.scss";
-import PuffLoader from "react-spinners/ClipLoader";
 
 export default function Home() {
   const key = process.env.REACT_APP_GOOGLE_MAPS;
@@ -48,12 +47,6 @@ export default function Home() {
       .finally(() => {
         setIsLoading(false);
       });
-  };
-  const style = {
-    border: "2px solid",
-    width: "100px",
-    height: "100px",
-    borderRadius: "50px",
   };
 
   if (loadError) return <div>Error loading maps</div>;
