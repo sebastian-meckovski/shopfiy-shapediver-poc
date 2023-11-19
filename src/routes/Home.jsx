@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { GoogleMap, useLoadScript, Marker } from "@react-google-maps/api";
 import "./Home.scss";
+import { dataset } from "./dataset";
+import { MarkerClusterer } from "@react-google-maps/api";
 
 export default function Home() {
   const key = process.env.REACT_APP_GOOGLE_MAPS;
@@ -24,10 +26,6 @@ export default function Home() {
   useEffect(() => {
     setCenter({ lat: 55, lng: 23 });
   }, []);
-
-  useEffect(() => {
-    console.log(isLoading);
-  }, [isLoading]);
 
   const getCurrentPosition = () => {
     setIsLoading(true);
@@ -65,6 +63,17 @@ export default function Home() {
         }}
         onClick={handleMapClick}
       >
+        <MarkerClusterer>
+          {(clusterer) =>
+            dataset.map((item) => (
+              <Marker
+                key={item.lat}
+                position={{ lat: item.lat, lng: item.lng }}
+                clusterer={clusterer}
+              />
+            ))
+          }
+        </MarkerClusterer>
         <Marker key={marker} position={marker} />
       </GoogleMap>
       <br />
