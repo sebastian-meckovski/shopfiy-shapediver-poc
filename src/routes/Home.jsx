@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { GoogleMap, useLoadScript, Marker } from "@react-google-maps/api";
 import "./Home.scss";
-import { dataset } from "./dataset";
 import { MarkerClusterer } from "@react-google-maps/api";
+import { listPullUpBarsCoords } from "../customQueries";
+import { API } from "aws-amplify";
 
 export default function Home() {
   const key = process.env.REACT_APP_GOOGLE_MAPS;
@@ -13,7 +14,27 @@ export default function Home() {
 
   const [marker, setMarker] = useState();
   const [center, setCenter] = useState();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [pullUpBars, setPullupBars] = useState([]);
+
+  async function getAllPullUpBars() {
+    try {
+      const response = await API.graphql({
+        query: listPullUpBarsCoords,
+      });
+
+      setPullupBars(response.data?.listPullUpBars?.items);
+    } catch (error) {
+      // Handle errors here
+      console.error("Error fetching data:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    getAllPullUpBars();
+  }, []);
 
   const handleMapClick = (event) => {
     const newMarker = {
@@ -31,9 +52,6 @@ export default function Home() {
     setIsLoading(true);
     new Promise((resolve, reject) => {
       navigator.geolocation.getCurrentPosition((pos) => {
-        console.log(pos.coords?.latitude);
-        console.log(pos.coords?.longitude);
-
         setMarker({ lat: pos.coords?.latitude, lng: pos.coords?.longitude });
         setCenter({ lat: pos.coords?.latitude, lng: pos.coords?.longitude });
         resolve();
@@ -63,17 +81,19 @@ export default function Home() {
         }}
         onClick={handleMapClick}
       >
-        <MarkerClusterer>
-          {(clusterer) =>
-            dataset.map((item) => (
-              <Marker
-                key={item.lat}
-                position={{ lat: item.lat, lng: item.lng }}
-                clusterer={clusterer}
-              />
-            ))
-          }
-        </MarkerClusterer>
+        {pullUpBars.length > 0 && (
+          <MarkerClusterer>
+            {(clusterer) =>
+              pullUpBars.map((item) => (
+                <Marker
+                  key={item.id}
+                  position={{ lat: item.location.lat, lng: item.location.lon }}
+                  clusterer={clusterer}
+                />
+              ))
+            }
+          </MarkerClusterer>
+        )}
         <Marker key={marker} position={marker} />
       </GoogleMap>
       <br />

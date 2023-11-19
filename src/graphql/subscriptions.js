@@ -10,7 +10,11 @@ export const onCreatePullUpBar = /* GraphQL */ `
       name
       description
       userID
-      location
+      location {
+        lat
+        lon
+        __typename
+      }
       images
       Ratings {
         nextToken
@@ -36,7 +40,11 @@ export const onUpdatePullUpBar = /* GraphQL */ `
       name
       description
       userID
-      location
+      location {
+        lat
+        lon
+        __typename
+      }
       images
       Ratings {
         nextToken
@@ -62,7 +70,11 @@ export const onDeletePullUpBar = /* GraphQL */ `
       name
       description
       userID
-      location
+      location {
+        lat
+        lon
+        __typename
+      }
       images
       Ratings {
         nextToken

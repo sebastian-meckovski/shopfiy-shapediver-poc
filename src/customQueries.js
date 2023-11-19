@@ -32,3 +32,16 @@ export const listPullUpBarsByUserByDate = /* GraphQL */ `
     }
   }
 `;
+export const listPullUpBarsCoords = /* GraphQL */ `
+  query MyQuery {
+    listPullUpBars {
+      items {
+        location {
+          lat
+          lon
+        }
+        id
+      }
+    }
+  }
+`;

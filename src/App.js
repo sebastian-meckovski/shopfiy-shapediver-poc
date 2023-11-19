@@ -24,6 +24,8 @@ const initialData = {
   files: [],
   loadedFiles: [],
   index: 0,
+  posX: "",
+  posY: "",
 };
 
 function App({ signOut, user }) {
@@ -43,7 +45,7 @@ function App({ signOut, user }) {
     setFormData(initialData);
   };
 
-  async function addPullUpBar(name, description, files) {
+  async function addPullUpBar(name, description, files, posX, posY) {
     try {
       const fileArray = [];
       if (Array.isArray(files)) {
@@ -69,6 +71,10 @@ function App({ signOut, user }) {
             userID: user.username,
             images: fileArray,
             type: "PullUpBar",
+            location: {
+              lat: posX,
+              lon: posY,
+            },
           },
         },
       }).then((result) => {
@@ -149,7 +155,13 @@ function App({ signOut, user }) {
 
   const handleSubmitAdd = (event) => {
     event.preventDefault(); // Prevent the default form submission behavior
-    addPullUpBar(formData.name, formData.description, formData.files);
+    addPullUpBar(
+      formData.name,
+      formData.description,
+      formData.files,
+      formData.posX,
+      formData.posY
+    );
     setPopupVisible(false);
     setFormData(initialData);
   };
@@ -173,6 +185,8 @@ function App({ signOut, user }) {
             id: response.data.getPullUpBar.id,
             index: index,
             loadedFiles: imagesLinks,
+            posX: response.data.getPullUpBar.location.lat,
+            posY: response.data.getPullUpBar.location.lon,
           };
         });
       });
@@ -208,6 +222,10 @@ function App({ signOut, user }) {
               ...pullUpBarList[formData.index].images.map((item) => item.id),
               ...fileArray,
             ],
+            location: {
+              lat: formData.posX,
+              lon: formData.posY,
+            },
           },
         },
       }).then(async (response) => {
@@ -235,6 +253,13 @@ function App({ signOut, user }) {
     setFormData({
       ...formData,
       [name]: value,
+    });
+  };
+  const handlePositionInputChange = (event) => {
+    const { name, value } = event.target;
+    setFormData({
+      ...formData,
+      [name]: parseFloat(value),
     });
   };
 
@@ -317,6 +342,22 @@ function App({ signOut, user }) {
                     type="text"
                     placeholder="Description"
                     name="description"
+                  />
+                  <input
+                    value={formData.posX}
+                    onChange={handlePositionInputChange}
+                    type="number"
+                    placeholder="Coordinate X"
+                    required
+                    name="posX"
+                  />
+                  <input
+                    value={formData.posY}
+                    onChange={handlePositionInputChange}
+                    type="number"
+                    placeholder="Coordinate Y"
+                    required
+                    name="posY"
                   />
                   <input
                     multiple

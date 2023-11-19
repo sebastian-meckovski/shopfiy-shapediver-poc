@@ -8,7 +8,11 @@ export const getPullUpBar = /* GraphQL */ `
       name
       description
       userID
-      location
+      location {
+        lat
+        lon
+        __typename
+      }
       images
       Ratings {
         nextToken
@@ -37,7 +41,6 @@ export const listPullUpBars = /* GraphQL */ `
         name
         description
         userID
-        location
         images
         type
         createdAt
@@ -135,7 +138,6 @@ export const PullUpBarsByDate = /* GraphQL */ `
         name
         description
         userID
-        location
         images
         type
         createdAt
