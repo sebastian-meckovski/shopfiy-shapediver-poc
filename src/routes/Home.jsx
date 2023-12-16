@@ -98,6 +98,7 @@ export default function Home() {
       </GoogleMap>
       <br />
       <button onClick={getCurrentPosition}> GET CURRENT POSITION</button>
+      
       {marker && (
         <>
           <p>the marker: </p>
