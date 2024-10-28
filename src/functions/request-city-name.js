@@ -7,6 +7,6 @@ app.http('request-city-name', {
         context.log(`Http function processed request for url "${request.url}"`);
         const name = request.query.get('name') || await request.text() || 'world';
 
-        return { body: `Hello, ${name}! This has been updated from pipeline. Another test here` };
+        return { body: `Hello, ${name}! Boom chaca laca` };
     }
 });
