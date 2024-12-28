@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import Image from "next/image";
 import "../app/globals.css";
 import Link from "next/link";
@@ -6,8 +6,6 @@ import Link from "next/link";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
-  interface FormEvent extends React.FormEvent<HTMLFormElement> {}
 
   const handleSubmit = (e: FormEvent): void => {
     e.preventDefault();
