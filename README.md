@@ -1,70 +1,171 @@
-# Getting Started with Create React App
+<p align="center">
+  <a href="https://vercel.com">
+    <img src="https://assets.vercel.com/image/upload/v1588805858/repositories/vercel/logo.png" height="96">
+    <h3 align="center">Vercel</h3>
+  </a>
+</p>
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+<p align="center">
+  Develop. Preview. Ship.
+</p>
 
-## Available Scripts
+<p align="center">
+  <a href="https://vercel.com/docs"><strong>Documentation</strong></a> ·
+  <a href="https://vercel.com/changelog"><strong>Changelog</strong></a> ·
+  <a href="https://vercel.com/templates"><strong>Templates</strong></a> ·
+  <a href="https://vercel.com/docs/cli"><strong>CLI</strong></a>
+</p>
+<br/>
 
-In the project directory, you can run:
+## Vercel
 
-### `npm start`
+Vercel’s Frontend Cloud provides the developer experience and infrastructure to build, scale, and secure a faster, more personalized Web.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Deploy
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Get started by [importing a project](https://vercel.com/new), [choosing a template](https://vercel.com/templates), or using the [Vercel CLI](https://vercel.com/docs/cli). Then, `git push` to deploy.
 
-### `npm test`
+## Documentation
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+For details on how to use Vercel, check out our [documentation](https://vercel.com/docs).
 
-### `npm run build`
+## Contributing
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+This project uses [pnpm](https://pnpm.io/) to install dependencies and run scripts.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+You can use the `vercel` script to run local changes as if you were invoking Vercel CLI. For example, `vercel deploy --cwd=/path/to/project` could be run with local changes with `pnpm vercel deploy --cwd=/path/to/project`.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+When contributing to this repository, please first discuss the change you wish to make via [GitHub Discussions](https://github.com/vercel/vercel/discussions/new) with the owners of this repository before submitting a Pull Request.
 
-### `npm run eject`
+Please read our [Code of Conduct](./.github/CODE_OF_CONDUCT.md) and follow it in all your interactions with the project.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### Local development
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+This project is configured in a monorepo, where one repository contains multiple npm packages. Dependencies are installed and managed with `pnpm`, not `npm` CLI.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+To get started, execute the following:
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+```
+git clone https://github.com/vercel/vercel
+cd vercel
+corepack enable
+pnpm install
+pnpm build
+pnpm lint
+pnpm test-unit
+```
 
-## Learn More
+Make sure all the tests pass before making changes.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+#### Running Vercel CLI Changes
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+You can use `pnpm vercel` from the `cli` package to invoke Vercel CLI with local changes:
 
-### Code Splitting
+```
+cd ./packages/cli
+pnpm vercel <cli-commands...>
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+See [CLI Local Development](../packages/cli#local-development) for more details.
 
-### Analyzing the Bundle Size
+### Verifying your change
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+Once you are done with your changes (we even suggest doing it along the way), make sure all the tests still pass by running:
 
-### Making a Progressive Web App
+```
+pnpm test-unit
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+from the root of the project.
 
-### Advanced Configuration
+If any test fails, make sure to fix it along with your changes. See [Interpreting test errors](#Interpreting-test-errors) for more information about how the tests are executed, especially the integration tests.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+### Pull Request Process
 
-### Deployment
+Once you are confident that your changes work properly, open a pull request on the main repository.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+The pull request will be reviewed by the maintainers and the tests will be checked by our continuous integration platform.
 
-### `npm run build` fails to minify
+### Interpreting test errors
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+There are 2 kinds of tests in this repository – Unit tests and Integration tests.
+
+Unit tests are run locally with `jest` and execute quickly because they are testing the smallest units of code.
+
+#### Integration tests
+
+Integration tests create deployments to your Vercel account using the `test` project name. After each test is deployed, the `probes` key is used to check if the response is the expected value. If the value doesn't match, you'll see a message explaining the difference. If the deployment failed to build, you'll see a more generic message like the following:
+
+```
+[Error: Fetched page https://test-8ashcdlew.vercel.app/root.js does not contain hello Root!. Instead it contains An error occurred with this application.
+
+    NO_STATUS_CODE_FRO Response headers:
+       cache-control=s-maxage=0
+      connection=close
+      content-type=text/plain; charset=utf-8
+      date=Wed, 19 Jun 2019 18:01:37 GMT
+      server=now
+      strict-transport-security=max-age=63072000
+      transfer-encoding=chunked
+      x-now-id=iad1:hgtzj-1560967297876-44ae12559f95
+      x-now-trace=iad1]
+```
+
+In such cases, you can visit the URL of the failed deployment and append `/_logs` to see the build error. In the case above, that would be https://test-8ashcdlew.vercel.app/_logs
+
+The logs of this deployment will contain the actual error which may help you to understand what went wrong.
+
+##### Running integration tests locally
+
+While running the full integration suite locally is not recommended, it's sometimes useful to isolate a failing test by running it on your machine. To do so, you'll need to ensure you have the appropriate credentials sourced in your shell:
+
+1. Create an access token. Follow the insructions here https://vercel.com/docs/rest-api#creating-an-access-token. Ensure the token scope is for your personal
+   account.
+2. Grab the team ID from the Vercel dashboard at `https://vercel.com/<MY-TEAM>/~/settings`.
+3. Source these into your shell rc file: `echo 'export VERCEL_TOKEN=<MY-TOKEN> VERCEL_TEAM_ID=<MY-TEAM-ID>' >> ~/.zshrc`
+
+From there, you should be able to trigger an integration test. Choose one
+that's already isolated to check that things work:
+
+```
+cd packages/next
+```
+
+Run the test:
+
+```
+pnpm test test/fixtures/00-server-build/index.test.js
+```
+
+#### @vercel/nft
+
+Some of the Builders use `@vercel/nft` to tree-shake files before deployment. If you suspect an error with this tree-shaking mechanism, you can create the following script in your project:
+
+```js
+const { nodeFileTrace } = require('@vercel/nft');
+nodeFileTrace(['path/to/entrypoint.js'], {
+  ts: true,
+  mixedModules: true,
+})
+  .then(o => console.log(o.fileList))
+  .then(e => console.error(e));
+```
+
+When you run this script, you'll see all the imported files. If files are missing, the bug is in [@vercel/nft](https://github.com/vercel/nft) and not the Builder.
+
+### Deploy a Builder with existing project
+
+Sometimes you want to test changes to a Builder against an existing project, maybe with `vercel dev` or actual deployment. You can avoid publishing every Builder change to npm by uploading the Builder as a tarball.
+
+1. Change directory to the desired Builder `cd ./packages/node`
+2. Run `pnpm build` to compile typescript and other build steps
+3. Run `npm pack` to create a tarball file
+4. Run `vercel *.tgz` to upload the tarball file and get a URL
+5. Edit any existing `vercel.json` project and replace `use` with the URL
+6. Run `vercel` or `vercel dev` to deploy with the experimental Builder
+
+## Reference
+
+- [Code of Conduct](./.github/CODE_OF_CONDUCT.md)
+- [Contributing Guidelines](./.github/CONTRIBUTING.md)
+- [Apache 2.0 License](./LICENSE)

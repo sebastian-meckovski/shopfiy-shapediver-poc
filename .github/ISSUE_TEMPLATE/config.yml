@@ -1,0 +1,11 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Bug Report
+    url: https://vercel.com/help
+    about: Reach out to our support team
+  - name: Feature Request
+    url: https://vercel.community
+    about: Share ideas for new features
+  - name: Ask a Question
+    url: https://vercel.community
+    about: Ask the community for help
