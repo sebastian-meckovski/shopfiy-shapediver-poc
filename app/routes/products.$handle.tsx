@@ -96,7 +96,7 @@ export default function Product() {
   });
 
   const {title, descriptionHtml} = product;
-
+  const modelViewUrl = product.metafield?.value;
   return (
     <div className="product">
       <ProductImage image={selectedVariant?.image} />
@@ -112,12 +112,20 @@ export default function Product() {
           selectedVariant={selectedVariant}
         />
         <br />
-        <br />
         <p>
           <strong>Description</strong>
         </p>
-        <br />
         <div dangerouslySetInnerHTML={{__html: descriptionHtml}} />
+        <br />
+        {modelViewUrl && (
+          <div>
+            <br />
+            <strong> Model View Url</strong>
+            <br />
+            <p>{modelViewUrl}</p>
+            <br />
+          </div>
+        )}
         <br />
       </div>
       <Analytics.ProductView
@@ -212,6 +220,10 @@ const PRODUCT_FRAGMENT = `#graphql
     seo {
       description
       title
+    }
+    metafield(namespace: "custom", key: "modelviewurl") {
+      key
+      value
     }
   }
   ${PRODUCT_VARIANT_FRAGMENT}
