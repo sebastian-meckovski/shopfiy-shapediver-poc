@@ -1,5 +1,5 @@
 import {redirect, type LoaderFunctionArgs} from '@shopify/remix-oxygen';
-import {useLoaderData, type MetaFunction} from '@remix-run/react';
+import {NavLink, useLoaderData, type MetaFunction} from '@remix-run/react';
 import {Money, Image, flattenConnection} from '@shopify/hydrogen';
 import type {OrderLineItemFullFragment} from 'customer-accountapi.generated';
 import {CUSTOMER_ORDER_QUERY} from '~/graphql/customer-account/CustomerOrderQuery';
@@ -153,6 +153,9 @@ export default function OrderRoute() {
           ) : (
             <p>No shipping address defined</p>
           )}
+          <NavLink to="/">
+            Download file
+          </NavLink>{' '}
           <h3>Status</h3>
           <div>
             <p>{fulfillmentStatus}</p>
