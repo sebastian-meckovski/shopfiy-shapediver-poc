@@ -1,5 +1,6 @@
 import {type LoaderFunctionArgs} from '@shopify/remix-oxygen';
 import {useLoaderData, type MetaFunction} from '@remix-run/react';
+import {useState} from 'react';
 import {
   getSelectedProductOptions,
   Analytics,
@@ -11,6 +12,15 @@ import {
 import {ProductPrice} from '~/components/ProductPrice';
 import {ProductImage} from '~/components/ProductImage';
 import {ProductForm} from '~/components/ProductForm';
+import {Image} from '@shopify/hydrogen';
+
+interface IProductImageNode {
+  id: string;
+  url: string;
+  altText?: string | null;
+  width?: number | null;
+  height?: number | null;
+}
 
 export const meta: MetaFunction<typeof loader> = ({data}) => {
   return [
@@ -79,6 +89,10 @@ function loadDeferredData({context, params}: LoaderFunctionArgs) {
 export default function Product() {
   const {product} = useLoaderData<typeof loader>();
 
+  // Set the initial selected image to the first image in the product gallery
+  const initialImage = product.images?.edges?.[0]?.node;
+  const [selectedImage, setSelectedImage] = useState(initialImage);
+
   // Optimistically selects a variant with given available variant information
   const selectedVariant = useOptimisticVariant(
     product.selectedOrFirstAvailableVariant,
@@ -86,7 +100,6 @@ export default function Product() {
   );
 
   // Sets the search param to the selected variant without navigation
-  // only when no search params are set in the url
   useSelectedOptionInUrlParam(selectedVariant.selectedOptions);
 
   // Get the product options array
@@ -97,9 +110,45 @@ export default function Product() {
 
   const {title, descriptionHtml} = product;
   const modelViewUrl = product.metafield?.value;
+
   return (
     <div className="product">
-      <ProductImage image={selectedVariant?.image} />
+      <div className="product-gallery">
+        {/* Main image display */}
+        <div className="main-image">
+          {selectedImage ? (
+            <ProductImage image={selectedImage}/>
+          ) : (
+            <p>No image available</p>
+          )}
+        </div>
+
+        {/* Thumbnails */}
+        <div className="thumbnails">
+          {product.images?.edges?.map(({node}: {node: IProductImageNode}) => (
+            <Image
+              key={node.id}
+              data={node}
+              width={80} // Thumbnail width
+              height={80} // Thumbnail height
+              alt={node.altText || title}
+              className={`thumbnail ${
+                selectedImage?.id === node.id ? 'active' : ''
+              }`}
+              onClick={() => setSelectedImage(node)}
+              style={{
+                cursor: 'pointer',
+                marginRight: '8px',
+                border:
+                  selectedImage?.id === node.id
+                    ? '2px solid #000'
+                    : '1px solid #ccc',
+              }}
+            />
+          ))}
+        </div>
+      </div>
+
       <div className="product-main">
         <h1>{title}</h1>
         <ProductPrice
@@ -120,7 +169,7 @@ export default function Product() {
         {modelViewUrl && (
           <div>
             <br />
-            <strong> Model View Url</strong>
+            <strong>Model View Url</strong>
             <br />
             <p>{modelViewUrl}</p>
             <br />
@@ -194,6 +243,17 @@ const PRODUCT_FRAGMENT = `#graphql
     description
     encodedVariantExistence
     encodedVariantAvailability
+    images(first: 10) {
+      edges {
+        node {
+          id
+          url
+          altText
+          width
+          height
+        }
+      }
+    }
     options {
       name
       optionValues {
@@ -214,7 +274,7 @@ const PRODUCT_FRAGMENT = `#graphql
     selectedOrFirstAvailableVariant(selectedOptions: $selectedOptions, ignoreUnknownOptions: true, caseInsensitiveMatch: true) {
       ...ProductVariant
     }
-    adjacentVariants (selectedOptions: $selectedOptions) {
+    adjacentVariants(selectedOptions: $selectedOptions) {
       ...ProductVariant
     }
     seo {
