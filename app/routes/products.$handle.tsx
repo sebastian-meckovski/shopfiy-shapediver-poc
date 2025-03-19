@@ -15,7 +15,7 @@ import {ProductForm} from '~/components/ProductForm';
 import {Image} from '@shopify/hydrogen';
 
 interface IProductImageNode {
-  id: string;
+  id?: string | null;
   url: string;
   altText?: string | null;
   width?: number | null;
@@ -117,7 +117,7 @@ export default function Product() {
         {/* Main image display */}
         <div className="main-image">
           {selectedImage ? (
-            <ProductImage image={selectedImage}/>
+            <ProductImage image={{...selectedImage, __typename: 'Image'}}/>
           ) : (
             <p>No image available</p>
           )}
