@@ -1,18 +1,18 @@
-import {type LoaderFunctionArgs} from '@shopify/remix-oxygen';
 import {useLoaderData, type MetaFunction} from '@remix-run/react';
 import {useState} from 'react';
+import {Image} from '@shopify/hydrogen';
+import {ProductImage} from '~/components/ProductImage';
+import {ProductPrice} from '~/components/ProductPrice';
+import {ProductForm} from '~/components/ProductForm';
 import {
   getSelectedProductOptions,
-  Analytics,
   useOptimisticVariant,
   getProductOptions,
   getAdjacentAndFirstAvailableVariants,
   useSelectedOptionInUrlParam,
+  Analytics,
 } from '@shopify/hydrogen';
-import {ProductPrice} from '~/components/ProductPrice';
-import {ProductImage} from '~/components/ProductImage';
-import {ProductForm} from '~/components/ProductForm';
-import {Image} from '@shopify/hydrogen';
+import {LoaderFunctionArgs} from '@remix-run/server-runtime';
 
 interface IProductImageNode {
   id?: string | null;
@@ -33,19 +33,11 @@ export const meta: MetaFunction<typeof loader> = ({data}) => {
 };
 
 export async function loader(args: LoaderFunctionArgs) {
-  // Start fetching non-critical data without blocking time to first byte
   const deferredData = loadDeferredData(args);
-
-  // Await the critical data required to render initial state of the page
   const criticalData = await loadCriticalData(args);
-
   return {...deferredData, ...criticalData};
 }
 
-/**
- * Load data necessary for rendering content above the fold. This is the critical data
- * needed to render the page. If it's unavailable, the whole page should 400 or 500 error.
- */
 async function loadCriticalData({
   context,
   params,
@@ -62,7 +54,6 @@ async function loadCriticalData({
     storefront.query(PRODUCT_QUERY, {
       variables: {handle, selectedOptions: getSelectedProductOptions(request)},
     }),
-    // Add other queries here, so that they are loaded in parallel
   ]);
 
   if (!product?.id) {
@@ -74,39 +65,45 @@ async function loadCriticalData({
   };
 }
 
-/**
- * Load data for rendering content below the fold. This data is deferred and will be
- * fetched after the initial page load. If it's unavailable, the page should still 200.
- * Make sure to not throw any errors here, as it will cause the page to 500.
- */
 function loadDeferredData({context, params}: LoaderFunctionArgs) {
-  // Put any API calls that is not critical to be available on first page render
-  // For example: product reviews, product recommendations, social feeds.
-
   return {};
 }
 
 export default function Product() {
   const {product} = useLoaderData<typeof loader>();
 
-  // Set the initial selected image to the first image in the product gallery
+  // States
   const initialImage = product.images?.edges?.[0]?.node;
-  const [selectedImage, setSelectedImage] = useState(initialImage);
+  const [selectedImage, setSelectedImage] = useState<IProductImageNode | null>(
+    initialImage,
+  );
+  const [isCustomImageSelected, setIsCustomImageSelected] = useState(false); // Track custom image selection
 
-  // Optimistically selects a variant with given available variant information
+  // Optimistic variant selection
   const selectedVariant = useOptimisticVariant(
     product.selectedOrFirstAvailableVariant,
     getAdjacentAndFirstAvailableVariants(product),
   );
 
-  // Sets the search param to the selected variant without navigation
+  // Sync URL params with selected variant
   useSelectedOptionInUrlParam(selectedVariant.selectedOptions);
 
-  // Get the product options array
+  // Get product options
   const productOptions = getProductOptions({
     ...product,
     selectedOrFirstAvailableVariant: selectedVariant,
   });
+
+  // Custom thumbnail click handler
+  const handleCustomClick = () => {
+    setSelectedImage(null); // Set to null or an empty state for a blank canvas
+    setIsCustomImageSelected(true); // Set the boolean to true
+  };
+
+  const handleImageClick = (image: IProductImageNode) => {
+    setSelectedImage(image);
+    setIsCustomImageSelected(false); // Reset the boolean to false
+  };
 
   const {title, descriptionHtml} = product;
   const modelViewUrl = product.metafield?.value;
@@ -115,9 +112,26 @@ export default function Product() {
     <div className="product">
       <div className="product-gallery">
         {/* Main image display */}
-        <div className="main-image">
+        <div
+          className={`main-image${
+            isCustomImageSelected ? '-custom-selected' : ''
+          }`}
+        >
           {selectedImage ? (
-            <ProductImage image={{...selectedImage, __typename: 'Image'}}/>
+            <ProductImage image={{...selectedImage, __typename: 'Image'}} />
+          ) : isCustomImageSelected ? (
+            <div
+              style={{
+                width: '100%',
+                aspectRatio: '1/1',
+                backgroundColor: '#f0f0f0',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              <p>Blank Canvas</p>
+            </div>
           ) : (
             <p>No image available</p>
           )}
@@ -125,27 +139,51 @@ export default function Product() {
 
         {/* Thumbnails */}
         <div className="thumbnails">
+          {/* Existing thumbnails */}
           {product.images?.edges?.map(({node}: {node: IProductImageNode}) => (
             <Image
               key={node.id}
               data={node}
-              width={80} // Thumbnail width
-              height={80} // Thumbnail height
+              width={80}
+              height={80}
               alt={node.altText || title}
               className={`thumbnail ${
                 selectedImage?.id === node.id ? 'active' : ''
               }`}
-              onClick={() => setSelectedImage(node)}
+              onClick={() => handleImageClick(node)}
               style={{
                 cursor: 'pointer',
-                marginRight: '8px',
-                border:
+                outline:
                   selectedImage?.id === node.id
                     ? '2px solid #000'
                     : '1px solid #ccc',
               }}
             />
           ))}
+
+          {/* Custom thumbnail for configuring */}
+          <div
+            className={`thumbnail ${isCustomImageSelected ? 'active' : ''}`}
+            onClick={handleCustomClick}
+            style={{
+              width: '80px',
+              height: '80px',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              cursor: 'pointer',
+              backgroundColor: '#f0f0f0',
+              borderRadius: '4px',
+              border: isCustomImageSelected
+                ? '2px solid #000'
+                : '1px solid #ccc',
+              marginRight: '8px',
+            }}
+          >
+            <span role="img" aria-label="Configure" style={{fontSize: '24px'}}>
+              ⚙️ {/* Symbol for "configure" */}
+            </span>
+          </div>
         </div>
       </div>
 

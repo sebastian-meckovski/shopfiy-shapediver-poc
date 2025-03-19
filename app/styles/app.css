@@ -508,3 +508,14 @@ button.reset:hover:not(:has(> *)) {
 .account-logout {
   display: inline-block;
 }
+
+.main-image-custom-selected {
+  margin-bottom: 4px;
+}
+
+.thumbnails {
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  width: 100%;
+  display: flex;
+}
