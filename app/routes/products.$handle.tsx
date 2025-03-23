@@ -97,6 +97,10 @@ export default function Product() {
     const init = async () => {
       try {
         if (sessionRef.current) return; // Skip if already initialized.
+        if (typeof window === 'undefined') {
+          // Prevent this from running on the server
+          return;
+        }
 
         // Create a session.
         const session = await createSession({
