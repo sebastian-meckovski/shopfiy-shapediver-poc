@@ -1,6 +1,5 @@
 import {type LoaderFunctionArgs} from '@shopify/remix-oxygen';
 import {useLoaderData, type MetaFunction} from '@remix-run/react';
-import {createSession, IParameterApi} from '@shapediver/viewer.session';
 import {
   getSelectedProductOptions,
   Analytics,
@@ -97,10 +96,7 @@ export default function Product() {
     const init = async () => {
       try {
         if (sessionRef.current) return; // Skip if already initialized.
-        if (typeof window === 'undefined') {
-          // Prevent this from running on the server
-          return;
-        }
+        const {createSession} = await import('@shapediver/viewer.session');
 
         // Create a session.
         const session = await createSession({
@@ -110,7 +106,6 @@ export default function Product() {
         });
         sessionRef.current = session;
         console.log('Session created:', session);
-
       } catch (error) {
         console.error('Error initializing the session or viewport:', error);
       }
