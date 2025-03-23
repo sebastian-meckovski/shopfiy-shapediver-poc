@@ -1,5 +1,6 @@
 import {type LoaderFunctionArgs} from '@shopify/remix-oxygen';
 import {useLoaderData, type MetaFunction} from '@remix-run/react';
+import {createSession, IParameterApi} from '@shapediver/viewer.session';
 import {
   getSelectedProductOptions,
   Analytics,
@@ -11,7 +12,7 @@ import {
 import {ProductPrice} from '~/components/ProductPrice';
 import {ProductImage} from '~/components/ProductImage';
 import {ProductForm} from '~/components/ProductForm';
-import {useEffect, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import axios from 'axios';
 
 export const meta: MetaFunction<typeof loader> = ({data}) => {
@@ -81,6 +82,7 @@ function loadDeferredData({context, params}: LoaderFunctionArgs) {
 export default function Product() {
   const {product} = useLoaderData<typeof loader>();
   const [name, setName] = useState<string>();
+  const sessionRef = useRef<any>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -88,6 +90,34 @@ export default function Product() {
       setName(response.data.name);
     };
     fetchData();
+  }, []);
+
+  // Initialization: create the viewport and session, then retrieve the parameter.
+  useEffect(() => {
+    const init = async () => {
+      try {
+        if (sessionRef.current) return; // Skip if already initialized.
+
+        // Create a session.
+        const session = await createSession({
+          ticket:
+            'ba390f092896eaf776e6259f607aeb8946ac1359671be86608452f0718ef7311da4b9ba9d6eff6c841415ca7927ef211a018ba90591a32b75a2d578bd9e613dc1d00e9387ba90e69c809ac6f7f7f923cea54ea061dba656144fd788b65173466f3a8a20fd9429a-2511deeda86828ddaa2386dca43e3bea',
+          modelViewUrl: 'https://sdr8euc1.eu-central-1.shapediver.com',
+        });
+        sessionRef.current = session;
+        console.log('Session created:', session);
+
+      } catch (error) {
+        console.error('Error initializing the session or viewport:', error);
+      }
+    };
+
+    init();
+
+    // Optional cleanup if you ever need to clean up session resources.
+    return () => {
+      sessionRef.current = null;
+    };
   }, []);
 
   // Optimistically selects a variant with given available variant information

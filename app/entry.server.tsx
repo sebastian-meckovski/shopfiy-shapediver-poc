@@ -16,7 +16,10 @@ export default async function handleRequest(
       checkoutDomain: context.env.PUBLIC_CHECKOUT_DOMAIN,
       storeDomain: context.env.PUBLIC_STORE_DOMAIN,
     },
-    connectSrc: ['https://swapi.dev'],
+    connectSrc: [
+      'https://swapi.dev',
+      'https://sdr8euc1.eu-central-1.shapediver.com',
+    ],
   });
 
   const body = await renderToReadableStream(
