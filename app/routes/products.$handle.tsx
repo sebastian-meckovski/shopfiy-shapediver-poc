@@ -11,6 +11,8 @@ import {
 import {ProductPrice} from '~/components/ProductPrice';
 import {ProductImage} from '~/components/ProductImage';
 import {ProductForm} from '~/components/ProductForm';
+import {useEffect, useState} from 'react';
+import axios from 'axios';
 
 export const meta: MetaFunction<typeof loader> = ({data}) => {
   return [
@@ -78,6 +80,15 @@ function loadDeferredData({context, params}: LoaderFunctionArgs) {
 
 export default function Product() {
   const {product} = useLoaderData<typeof loader>();
+  const [name, setName] = useState<string>();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await axios.get('https://swapi.dev/api/people/1/');
+      setName(response.data.name);
+    };
+    fetchData();
+  }, []);
 
   // Optimistically selects a variant with given available variant information
   const selectedVariant = useOptimisticVariant(
@@ -115,6 +126,8 @@ export default function Product() {
         <br />
         <p>
           <strong>Description</strong>
+          <br />
+          {name && <strong>{name}</strong>}
         </p>
         <br />
         <div dangerouslySetInnerHTML={{__html: descriptionHtml}} />
