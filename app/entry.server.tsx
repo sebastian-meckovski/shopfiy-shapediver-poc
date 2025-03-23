@@ -16,6 +16,12 @@ export default async function handleRequest(
       checkoutDomain: context.env.PUBLIC_CHECKOUT_DOMAIN,
       storeDomain: context.env.PUBLIC_STORE_DOMAIN,
     },
+    connectSrc: [
+      'https://sdr8euc1.eu-central-1.shapediver.com',
+      'https://viewer.shapediver.com/',
+      'blob: data',
+    ],
+    imgSrc: ['blob: data', '*', 'data:'],
   });
 
   const body = await renderToReadableStream(
