@@ -17,7 +17,6 @@ export default async function handleRequest(
       storeDomain: context.env.PUBLIC_STORE_DOMAIN,
     },
     connectSrc: [
-      'https://swapi.dev',
       'https://sdr8euc1.eu-central-1.shapediver.com',
     ],
   });

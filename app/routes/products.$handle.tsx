@@ -12,7 +12,6 @@ import {ProductPrice} from '~/components/ProductPrice';
 import {ProductImage} from '~/components/ProductImage';
 import {ProductForm} from '~/components/ProductForm';
 import {useEffect, useRef, useState} from 'react';
-import axios from 'axios';
 
 export const meta: MetaFunction<typeof loader> = ({data}) => {
   return [
@@ -82,14 +81,6 @@ export default function Product() {
   const {product} = useLoaderData<typeof loader>();
   const [name, setName] = useState<string>();
   const sessionRef = useRef<any>(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const response = await axios.get('https://swapi.dev/api/people/1/');
-      setName(response.data.name);
-    };
-    fetchData();
-  }, []);
 
   // Initialization: create the viewport and session, then retrieve the parameter.
   useEffect(() => {
