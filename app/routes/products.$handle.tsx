@@ -113,8 +113,10 @@ export default function Product() {
   useEffect(() => {
     const init = async () => {
       console.log('Initializing session and viewport...');
-      if (!canvasRef.current) return;
-  
+      console.log('window:', window);
+
+      if (!canvasRef.current || window == undefined) return;
+      
       
       try {
         // ⬇️ Import ShapeDiver functions only on client side
