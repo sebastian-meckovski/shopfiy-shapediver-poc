@@ -12,7 +12,7 @@ import {ProductPrice} from '~/components/ProductPrice';
 import {ProductImage} from '~/components/ProductImage';
 import {ProductForm} from '~/components/ProductForm';
 import {useEffect, useRef, useState} from 'react';
-import { createSession, ISessionApi } from '@shapediver/viewer.session';
+import { ISessionApi } from '@shapediver/viewer.session';
 
 export const meta: MetaFunction<typeof loader> = ({data}) => {
   return [
@@ -88,6 +88,7 @@ export default function Product() {
     const init = async () => {
       try {
         if (sessionRef.current) return; // Skip if already initialized.
+        const {createSession} = await import('@shapediver/viewer.session');
 
         // Create a session.
         const session = await createSession({
