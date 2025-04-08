@@ -32,6 +32,7 @@ export default defineConfig({
     assetsInlineLimit: 0,
   },
   ssr: {
+    external: ['@shapediver/viewer.session', '@shapediver/viewer.viewport'],
     optimizeDeps: {
       /**
        * Include dependencies here if they throw CJS<>ESM errors.
