@@ -12,7 +12,7 @@ import {ProductPrice} from '~/components/ProductPrice';
 import {ProductImage} from '~/components/ProductImage';
 import {ProductForm} from '~/components/ProductForm';
 import {useEffect, useRef, useState} from 'react';
-import { createSession } from '@shapediver/viewer.session';
+import { ISessionApi } from '@shapediver/viewer.session';
 
 export const meta: MetaFunction<typeof loader> = ({data}) => {
   return [
@@ -81,17 +81,19 @@ function loadDeferredData({context, params}: LoaderFunctionArgs) {
 export default function Product() {
   const {product} = useLoaderData<typeof loader>();
   const [name, setName] = useState<string>();
-  const sessionRef = useRef<any>(null);
+  const sessionRef = useRef<ISessionApi>(null) as React.MutableRefObject<ISessionApi | null>;
 
   // Initialization: create the viewport and session, then retrieve the parameter.
   useEffect(() => {
     const init = async () => {
       try {
         if (sessionRef.current) return; // Skip if already initialized.
+        const {createSession} = await import('@shapediver/viewer.session');
 
         // Create a session.
-        const session = createSession({
-          ticket: 'ba390f092896eaf776e6259f607aeb8946ac1359671be86608452f0718ef7311da4b9ba9d6eff6c841415ca7927ef211a018ba90591a32b75a2d578bd9e613dc1d00e9387ba90e69c809ac6f7f7f923cea54ea061dba656144fd788b65173466f3a8a20fd9429a-2511deeda86828ddaa2386dca43e3bea',
+        const session = await createSession({
+          ticket:
+            'ba390f092896eaf776e6259f607aeb8946ac1359671be86608452f0718ef7311da4b9ba9d6eff6c841415ca7927ef211a018ba90591a32b75a2d578bd9e613dc1d00e9387ba90e69c809ac6f7f7f923cea54ea061dba656144fd788b65173466f3a8a20fd9429a-2511deeda86828ddaa2386dca43e3bea',
           modelViewUrl: 'https://sdr8euc1.eu-central-1.shapediver.com',
         });
         sessionRef.current = session;
