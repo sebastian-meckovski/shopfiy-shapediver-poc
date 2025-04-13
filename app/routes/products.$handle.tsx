@@ -1,4 +1,4 @@
-import {useEffect, useRef} from 'react';
+import {useEffect, useMemo, useRef} from 'react';
 import {useLoaderData, type MetaFunction} from '@remix-run/react';
 import {useState} from 'react';
 import {Image} from '@shopify/hydrogen';
@@ -151,6 +151,28 @@ export default function Product() {
   const modelViewUrl = product.modelViewUrl?.value;
   const ticketId = product.ticketId?.value;
 
+  const ProductDetails = useMemo(() => {
+    return (
+      <div className="product-main">
+        <h1>{title}</h1>
+        <ProductPrice
+          price={selectedVariant?.price}
+          compareAtPrice={selectedVariant?.compareAtPrice}
+        />
+        <br />
+        <ProductForm
+          productOptions={productOptions}
+          selectedVariant={selectedVariant}
+        />
+        <br />
+        <p>
+          <strong>Description</strong>
+        </p>
+        <div dangerouslySetInnerHTML={{__html: descriptionHtml}} />
+      </div>
+    );
+  }, []);
+
   return (
     <div className="product">
       <div className="product-gallery">
@@ -228,34 +250,99 @@ export default function Product() {
             </span>
           </div>
         </div>
+        {isCustomImageSelected && ProductDetails}
       </div>
+      {isCustomImageSelected && (
+        <div>
+          <TextInput
+            type="number"
+            placeholder="Your parameter number value"
+            required
+          />
+          <TextInput
+            type="text"
+            placeholder="Your parameter text value"
+            required
+          />
+          <ToggleSwitch checked={checked} onChange={setChecked} />
+          <RangeSlider />
+          <TextInput
+            type="number"
+            placeholder="Your parameter number value"
+            required
+          />
+          <TextInput
+            type="text"
+            placeholder="Your parameter text value"
+            required
+          />
+          <ToggleSwitch checked={checked} onChange={setChecked} />
+          <RangeSlider />
+          <TextInput
+            type="number"
+            placeholder="Your parameter number value"
+            required
+          />
+          <TextInput
+            type="text"
+            placeholder="Your parameter text value"
+            required
+          />
+          <ToggleSwitch checked={checked} onChange={setChecked} />
+          <RangeSlider />
+          <TextInput
+            type="number"
+            placeholder="Your parameter number value"
+            required
+          />
+          <TextInput
+            type="text"
+            placeholder="Your parameter text value"
+            required
+          />
+          <ToggleSwitch checked={checked} onChange={setChecked} />
+          <RangeSlider />
+          <TextInput
+            type="number"
+            placeholder="Your parameter number value"
+            required
+          />
+          <TextInput
+            type="text"
+            placeholder="Your parameter text value"
+            required
+          />
+          <ToggleSwitch checked={checked} onChange={setChecked} />
+          <RangeSlider />
+          <TextInput
+            type="number"
+            placeholder="Your parameter number value"
+            required
+          />
+          <TextInput
+            type="text"
+            placeholder="Your parameter text value"
+            required
+          />
+          <ToggleSwitch checked={checked} onChange={setChecked} />
+          <RangeSlider />
+          <TextInput
+            type="number"
+            placeholder="Your parameter number value"
+            required
+          />
+          <TextInput
+            type="text"
+            placeholder="Your parameter text value"
+            required
+          />
+          <ToggleSwitch checked={checked} onChange={setChecked} />
+          <RangeSlider />
+        </div>
+      )}
 
-      <TextInput
-        type="number"
-        placeholder="Your parameter number value"
-        required
-      />
-      <TextInput type="text" placeholder="Your parameter text value" required />
-      <ToggleSwitch checked={checked} onChange={setChecked} />
-      <RangeSlider />
+      {!isCustomImageSelected && ProductDetails}
 
-      <div className="product-main">
-        <h1>{title}</h1>
-        <ProductPrice
-          price={selectedVariant?.price}
-          compareAtPrice={selectedVariant?.compareAtPrice}
-        />
-        <br />
-        <ProductForm
-          productOptions={productOptions}
-          selectedVariant={selectedVariant}
-        />
-        <br />
-        <p>
-          <strong>Description</strong>
-        </p>
-        <div dangerouslySetInnerHTML={{__html: descriptionHtml}} />
-      </div>
       <Analytics.ProductView
         data={{
           products: [
