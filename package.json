@@ -16,8 +16,8 @@
   "dependencies": {
     "@remix-run/react": "^2.15.3",
     "@remix-run/server-runtime": "^2.15.3",
-    "@shapediver/viewer.session": "^3.9.0",
-    "@shapediver/viewer.viewport": "^3.9.0",
+    "@shapediver/viewer.session": "^3.9.6",
+    "@shapediver/viewer.viewport": "^3.9.6",
     "@shopify/hydrogen": "2025.1.2",
     "@shopify/remix-oxygen": "^2.0.11",
     "graphql": "^16.6.0",

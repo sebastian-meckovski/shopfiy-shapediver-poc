@@ -15,7 +15,6 @@ import {
 } from '@shopify/hydrogen';
 import {LoaderFunctionArgs} from '@remix-run/server-runtime';
 
-
 interface IProductImageNode {
   id?: string | null;
   url: string;
@@ -112,64 +111,39 @@ export default function Product() {
 
   useEffect(() => {
     const init = async () => {
-      console.log('Initializing session and viewport...');
-      console.log('window:', window);
-
       if (!canvasRef.current || window == undefined) return;
-      
-      
+
       try {
         // ⬇️ Import ShapeDiver functions only on client side
-        const [{ createSession, sessions }, { createViewport, VISIBILITY_MODE }] = await Promise.all([
-          import('@shapediver/viewer.session'),
-          import('@shapediver/viewer.viewport')
-        ]);
+        const [{createSession, sessions}, {createViewport, VISIBILITY_MODE}] =
+          await Promise.all([
+            import('@shapediver/viewer.session'),
+            import('@shapediver/viewer.viewport'),
+          ]);
         const canvasElement = canvasRef.current;
-        const availableSessions = Object.values(sessions);
-        const matchedSession = availableSessions.find((session) => session.ticket === ticketId);
-  
-        if (matchedSession) {
-          console.log('Matched session:', matchedSession);
-          sessionRef.current = matchedSession;
-  
-          const viewportCreated = await createViewport({
-            canvas: canvasElement,
-            visibility: VISIBILITY_MODE.SESSIONS,
-            sessionSettingsId: '9d469805-7d49-48cf-9f86-9bff317a9ab0',
-            visibilitySessionIds: ['9d469805-7d49-48cf-9f86-9bff317a9ab0'],
-          });
-  
-          console.log('Viewport created:', viewportCreated);
-        } else {
-          console.log('No matched session found.');
-          await createViewport({ canvas: canvasElement });
-        }
-  
-        if (sessionRef.current) return;
-  
+        await createViewport({canvas: canvasElement});
+
         const session = await createSession({
           ticket: ticketId,
           modelViewUrl: modelViewUrl!,
         });
-  
-        console.log('Session initialized:', session);
+
         sessionRef.current = session;
-  
+
         const displayParameters = Object.values(session.parameters);
         setParameters(displayParameters);
       } catch (error) {
         console.error('Error initializing the session or viewport:', error);
       }
     };
-  
+
     init();
-  
+
     return () => {
       sessionRef.current?.close();
       sessionRef.current = null;
     };
   }, [selectedImage]);
-  
 
   const {title, descriptionHtml} = product;
   const modelViewUrl = product.modelViewUrl?.value;
