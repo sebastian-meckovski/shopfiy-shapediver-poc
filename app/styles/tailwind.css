@@ -1,0 +1,13 @@
+/**
+ * Configure Tailwind v4 in this file using CSS variables and directives:
+ * https://tailwindcss.com/docs/v4-beta#css-first-configuration
+ */
+
+@import 'tailwindcss';
+@plugin 'flowbite-react/plugin/tailwindcss';
+@source '../../.flowbite-react/class-list.json';
+
+@theme {
+  --color-lime-*: initial;
+  --color-fuchsia-*: initial;
+}

@@ -14,6 +14,7 @@ import {
   Analytics,
 } from '@shopify/hydrogen';
 import {LoaderFunctionArgs} from '@remix-run/server-runtime';
+import {TextInput, ToggleSwitch, RangeSlider} from 'flowbite-react';
 
 interface IProductImageNode {
   id?: string | null;
@@ -74,6 +75,7 @@ export default function Product() {
   const {product} = useLoaderData<typeof loader>();
 
   // States
+  const [checked, setChecked] = useState<boolean>(false);
   const initialImage = product.images?.edges?.[0]?.node;
   const [selectedImage, setSelectedImage] = useState<IProductImageNode | null>(
     initialImage,
@@ -148,8 +150,6 @@ export default function Product() {
   const {title, descriptionHtml} = product;
   const modelViewUrl = product.modelViewUrl?.value;
   const ticketId = product.ticketId?.value;
-
-  console.log('product:', product);
 
   return (
     <div className="product">
@@ -229,6 +229,15 @@ export default function Product() {
           </div>
         </div>
       </div>
+
+      <TextInput
+        type="number"
+        placeholder="Your parameter number value"
+        required
+      />
+      <TextInput type="text" placeholder="Your parameter text value" required />
+      <ToggleSwitch checked={checked} onChange={setChecked} />
+      <RangeSlider />
 
       <div className="product-main">
         <h1>{title}</h1>
