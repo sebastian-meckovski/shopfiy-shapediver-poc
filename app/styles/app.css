@@ -416,7 +416,7 @@ button.reset:hover:not(:has(> *)) {
   display: grid;
   @media (min-width: 45em) {
     grid-template-columns: 1fr 1fr;
-    grid-gap: 4rem;
+    grid-gap: 2rem;
   }
 }
 
@@ -514,6 +514,7 @@ button.reset:hover:not(:has(> *)) {
 }
 
 .thumbnails {
+  margin: .25rem 0;
   gap: 0.5rem;
   flex-wrap: wrap;
   width: 100%;
