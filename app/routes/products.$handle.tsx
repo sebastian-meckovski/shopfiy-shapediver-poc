@@ -1,4 +1,4 @@
-import {useEffect, useRef} from 'react';
+import {useCallback, useEffect, useMemo, useRef} from 'react';
 import {useLoaderData, type MetaFunction} from '@remix-run/react';
 import {useState} from 'react';
 import {Image} from '@shopify/hydrogen';
@@ -14,6 +14,10 @@ import {
   Analytics,
 } from '@shopify/hydrogen';
 import {LoaderFunctionArgs} from '@remix-run/server-runtime';
+import {TextInput, ToggleSwitch, RangeSlider, Label} from 'flowbite-react';
+import {IParameterApi} from '@shapediver/viewer.session';
+import {debounce} from '~/helpers/debounce';
+import {useSession} from '~/shared/context/SessionContext';
 
 interface IProductImageNode {
   id?: string | null;
@@ -82,6 +86,7 @@ export default function Product() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const sessionRef = useRef<any | null>(null);
   const [parameters, setParameters] = useState<any>([]);
+  const {setSession} = useSession(); // Assuming you have a session context to set the session
 
   // Optimistic variant selection
   const selectedVariant = useOptimisticVariant(
@@ -111,17 +116,14 @@ export default function Product() {
 
   useEffect(() => {
     const init = async () => {
-      if (!canvasRef.current || window == undefined) return;
+      if (!canvasRef.current) return;
 
       try {
-        // ⬇️ Import ShapeDiver functions only on client side
-        const [{createSession, sessions}, {createViewport, VISIBILITY_MODE}] =
-          await Promise.all([
-            import('@shapediver/viewer.session'),
-            import('@shapediver/viewer.viewport'),
-          ]);
-        const canvasElement = canvasRef.current;
-        await createViewport({canvas: canvasElement});
+        const [{createSession}, {createViewport}] = await Promise.all([
+          import('@shapediver/viewer.session'),
+          import('@shapediver/viewer.viewport'),
+        ]);
+        await createViewport({canvas: canvasRef.current});
 
         const session = await createSession({
           ticket: ticketId,
@@ -129,6 +131,7 @@ export default function Product() {
         });
 
         sessionRef.current = session;
+        setSession(session); // Set the session in context
 
         const displayParameters = Object.values(session.parameters);
         setParameters(displayParameters);
@@ -149,7 +152,41 @@ export default function Product() {
   const modelViewUrl = product.modelViewUrl?.value;
   const ticketId = product.ticketId?.value;
 
-  console.log('product:', product);
+  const ProductDetails = useMemo(() => {
+    return (
+      <div className="product-main">
+        <h1>{title}</h1>
+        <ProductPrice
+          price={selectedVariant?.price}
+          compareAtPrice={selectedVariant?.compareAtPrice}
+        />
+        <br />
+        <ProductForm
+          productOptions={productOptions}
+          selectedVariant={selectedVariant}
+        />
+        <br />
+        <p>
+          <strong>Description</strong>
+        </p>
+        <div dangerouslySetInnerHTML={{__html: descriptionHtml}} />
+      </div>
+    );
+  }, []);
+
+  const handleParameterChange = useCallback(
+    debounce((value, id) => {
+      const session = sessionRef.current;
+      if (!session) return;
+      const parameter = session.getParameterById(id);
+      if (!parameter) return;
+      parameter.value = value;
+      session.customize().catch((error: any) => {
+        console.error('Error customizing session:', error);
+      });
+    }, 1000),
+    [],
+  );
 
   return (
     <div className="product">
@@ -228,25 +265,112 @@ export default function Product() {
             </span>
           </div>
         </div>
+        {isCustomImageSelected && ProductDetails}
       </div>
 
-      <div className="product-main">
-        <h1>{title}</h1>
-        <ProductPrice
-          price={selectedVariant?.price}
-          compareAtPrice={selectedVariant?.compareAtPrice}
-        />
-        <br />
-        <ProductForm
-          productOptions={productOptions}
-          selectedVariant={selectedVariant}
-        />
-        <br />
-        <p>
-          <strong>Description</strong>
-        </p>
-        <div dangerouslySetInnerHTML={{__html: descriptionHtml}} />
-      </div>
+      {isCustomImageSelected && parameters.length > 0 && (
+        <div>
+          {parameters.map((parameter: IParameterApi<unknown>) => {
+            if (parameter.hidden) return null;
+            switch (parameter.type) {
+              case 'Float':
+              case 'Int':
+                return (
+                  <div key={parameter.id}>
+                    <Label key={`${parameter.id}-label`} htmlFor={parameter.id}>
+                      {parameter.name} - {String(parameter.value)}
+                    </Label>
+                    <RangeSlider
+                      key={parameter.id}
+                      id={parameter.id}
+                      step={Math.pow(
+                        10,
+                        parameter.decimalplaces ? -parameter.decimalplaces : 0,
+                      )}
+                      min={parameter.min}
+                      max={parameter.max}
+                      value={
+                        parameters.find(
+                          (p: IParameterApi<unknown>) => p.id === parameter.id,
+                        )?.value as number
+                      }
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        setParameters((prev: IParameterApi<unknown>[]) => {
+                          (
+                            prev.find((p) => p.id === parameter.id) as any
+                          ).value = e.target.value;
+                          return [...prev];
+                        });
+                        handleParameterChange(e.target.value, parameter.id);
+                      }}
+                    />
+                  </div>
+                );
+              case 'Bool':
+                return (
+                  <div key={parameter.id}>
+                    <Label key={`${parameter.id}-label`} htmlFor={parameter.id}>
+                      {parameter.name}
+                    </Label>
+                    <ToggleSwitch
+                      key={parameter.id}
+                      id={parameter.id}
+                      checked={
+                        parameters.find(
+                          (p: IParameterApi<unknown>) => p.id === parameter.id,
+                        )?.value as boolean
+                      }
+                      onChange={(checked: boolean) => {
+                        setParameters((prev: IParameterApi<boolean>[]) => {
+                          (
+                            prev.find(
+                              (p: IParameterApi<boolean>) =>
+                                p.id === parameter.id,
+                            ) as IParameterApi<boolean>
+                          ).value = checked;
+                          return [...prev];
+                        });
+                        handleParameterChange(checked, parameter.id);
+                      }}
+                    />
+                  </div>
+                );
+              case 'String':
+              case 'Color':
+              case 'StringList':
+                return (
+                  <div key={parameter.id}>
+                    <label htmlFor={parameter.id}>{parameter.name}</label>
+                    <TextInput
+                      value={
+                        parameters.find(
+                          (p: IParameterApi<string>) => p.id === parameter.id,
+                        )?.value as string
+                      }
+                      onChange={(e) => {
+                        setParameters((prev: IParameterApi<unknown>[]) => {
+                          (
+                            prev.find(
+                              (p: IParameterApi<unknown>) =>
+                                p.id === parameter.id,
+                            ) as any
+                          ).value = e.target.value;
+                          return [...prev];
+                        });
+                        handleParameterChange(e.target.value, parameter.id);
+                      }}
+                    />
+                  </div>
+                );
+              default:
+                return null;
+            }
+          })}
+        </div>
+      )}
+
+      {!isCustomImageSelected && ProductDetails}
+
       <Analytics.ProductView
         data={{
           products: [

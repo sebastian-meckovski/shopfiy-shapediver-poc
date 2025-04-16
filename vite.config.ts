@@ -3,6 +3,8 @@ import {hydrogen} from '@shopify/hydrogen/vite';
 import {oxygen} from '@shopify/mini-oxygen/vite';
 import {vitePlugin as remix} from '@remix-run/dev';
 import tsconfigPaths from 'vite-tsconfig-paths';
+import flowbiteReact from 'flowbite-react/plugin/vite';
+import tailwindcss from '@tailwindcss/vite';
 
 declare module '@remix-run/server-runtime' {
   interface Future {
@@ -12,6 +14,7 @@ declare module '@remix-run/server-runtime' {
 
 export default defineConfig({
   plugins: [
+    tailwindcss(),
     hydrogen(),
     oxygen(),
     remix({
@@ -25,6 +28,7 @@ export default defineConfig({
       },
     }),
     tsconfigPaths(),
+    flowbiteReact(),
   ],
   build: {
     // Allow a strict Content-Security-Policy
@@ -32,7 +36,11 @@ export default defineConfig({
     assetsInlineLimit: 0,
   },
   ssr: {
-    external: ['@shapediver/viewer.session', '@shapediver/viewer.viewport'],
+    external: [
+      '@shapediver/viewer.session',
+      '@shapediver/viewer.viewport',
+      'tailwindcss',
+    ],
     optimizeDeps: {
       /**
        * Include dependencies here if they throw CJS<>ESM errors.
@@ -44,7 +52,7 @@ export default defineConfig({
        * Include 'example-dep' in the array below.
        * @see https://vitejs.dev/config/dep-optimization-options
        */
-      include: [],
+      include: ['flowbite-react'],
     },
   },
 });
