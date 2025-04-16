@@ -145,6 +145,7 @@ export default function Product() {
     return () => {
       sessionRef.current?.close();
       sessionRef.current = null;
+      setSession(null);
     };
   }, [selectedImage]);
 
