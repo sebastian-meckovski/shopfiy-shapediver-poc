@@ -39,10 +39,6 @@ export function AddToCartButton({
       return;
     }
 
-
-
-    console.log(session);
-    // Create FormData from the form
     const formData = new FormData(form);
 
     // Retrieve the "cartFormInput" field from the form data
