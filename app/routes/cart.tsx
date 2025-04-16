@@ -30,18 +30,8 @@ export async function action({ request, context }: ActionFunctionArgs) {
 
   switch (action) {
     case CartForm.ACTIONS.LinesAdd:
-      // Add a unique attribute to each line being added to the cart
-      const linesWithUniqueId = inputs.lines.map((line: any) => ({
-        ...line,
-        attributes: [
-          ...(line.attributes || []),
-          {
-            key: "unique_id",
-            value: `${line.merchandiseId}-${new Date().getTime()}`, // Unique identifier based on timestamp
-          },
-        ],
-      }));
-      result = await cart.addLines(linesWithUniqueId);
+
+      result = await cart.addLines(inputs.lines);
       break;
 
     case CartForm.ACTIONS.LinesUpdate:

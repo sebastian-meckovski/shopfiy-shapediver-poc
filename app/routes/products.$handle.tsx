@@ -17,6 +17,7 @@ import {LoaderFunctionArgs} from '@remix-run/server-runtime';
 import {TextInput, ToggleSwitch, RangeSlider, Label} from 'flowbite-react';
 import {IParameterApi} from '@shapediver/viewer.session';
 import {debounce} from '~/helpers/debounce';
+import {useSession} from '~/shared/context/SessionContext';
 
 interface IProductImageNode {
   id?: string | null;
@@ -85,6 +86,7 @@ export default function Product() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const sessionRef = useRef<any | null>(null);
   const [parameters, setParameters] = useState<any>([]);
+  const {setSession} = useSession(); // Assuming you have a session context to set the session
 
   // Optimistic variant selection
   const selectedVariant = useOptimisticVariant(
@@ -129,6 +131,7 @@ export default function Product() {
         });
 
         sessionRef.current = session;
+        setSession(session); // Set the session in context
 
         const displayParameters = Object.values(session.parameters);
         setParameters(displayParameters);

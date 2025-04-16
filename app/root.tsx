@@ -17,6 +17,7 @@ import appStyles from '~/styles/app.css?url';
 import {PageLayout} from '~/components/PageLayout';
 import {FOOTER_QUERY, HEADER_QUERY} from '~/lib/fragments';
 import tailwindCss from './styles/tailwind.css?url';
+import {SessionProvider} from './shared/context/SessionContext';
 
 export type RootLoader = typeof loader;
 
@@ -164,7 +165,9 @@ export function Layout({children}: {children?: React.ReactNode}) {
             shop={data.shop}
             consent={data.consent}
           >
-            <PageLayout {...data}>{children}</PageLayout>
+            <SessionProvider>
+              <PageLayout {...data}>{children}</PageLayout>
+            </SessionProvider>
           </Analytics.Provider>
         ) : (
           children
