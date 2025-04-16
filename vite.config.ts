@@ -38,8 +38,7 @@ export default defineConfig({
   ssr: {
     external: [
       '@shapediver/viewer.session',
-      '@shapediver/viewer.viewport',
-      'tailwindcss',
+      '@shapediver/viewer.viewport'
     ],
     optimizeDeps: {
       /**
