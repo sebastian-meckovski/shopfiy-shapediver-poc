@@ -1,8 +1,9 @@
 import {redirect, type LoaderFunctionArgs} from '@shopify/remix-oxygen';
-import {NavLink, useLoaderData, type MetaFunction} from '@remix-run/react';
+import {useLoaderData, type MetaFunction} from '@remix-run/react';
 import {Money, Image, flattenConnection} from '@shopify/hydrogen';
 import type {OrderLineItemFullFragment} from 'customer-accountapi.generated';
 import {CUSTOMER_ORDER_QUERY} from '~/graphql/customer-account/CustomerOrderQuery';
+import {extractLineItemId} from '~/helpers/extractLineItemNumber';
 
 export const meta: MetaFunction<typeof loader> = ({data}) => {
   return [{title: `Order ${data?.order?.name}`}];
@@ -69,9 +70,8 @@ export default function OrderRoute() {
           <thead>
             <tr>
               <th scope="col">Product</th>
-              <th scope="col">Price</th>
-              <th scope="col">Quantity</th>
               <th scope="col">Total</th>
+              <th scope="col">File</th>
             </tr>
           </thead>
           <tbody>
@@ -153,10 +153,6 @@ export default function OrderRoute() {
           ) : (
             <p>No shipping address defined</p>
           )}
-          <NavLink to="/">
-            Download file
-          </NavLink>{' '}
-          <h3>Status</h3>
           <div>
             <p>{fulfillmentStatus}</p>
           </div>
@@ -173,6 +169,8 @@ export default function OrderRoute() {
 }
 
 function OrderLineRow({lineItem}: {lineItem: OrderLineItemFullFragment}) {
+  const numericId = extractLineItemId(lineItem.id);
+  const href = `/download?lineItem=${numericId}`;
   return (
     <tr key={lineItem.id}>
       <td>
@@ -189,11 +187,12 @@ function OrderLineRow({lineItem}: {lineItem: OrderLineItemFullFragment}) {
         </div>
       </td>
       <td>
-        <Money data={lineItem.price!} />
-      </td>
-      <td>{lineItem.quantity}</td>
-      <td>
         <Money data={lineItem.totalDiscount!} />
+      </td>
+      <td>
+        <div style={{margin: '0.5rem'}}>
+          <a href={href}>Download</a>
+        </div>
       </td>
     </tr>
   );
